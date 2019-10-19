@@ -71,7 +71,8 @@ from expressions. We start with the two simplest kinds:
     <aside name="print">
 
     I will note with only a modicum of defensiveness that BASIC and Python
-    have dedicated print statements and they are real languages.
+    have dedicated print statements and they are real languages. Granted,
+    Python did remove their print statement in 3.0...
 
     </aside>
 
@@ -148,6 +149,14 @@ temporary hack to get the last chapter up and running. Now that our grammar has
 the correct starting rule, `program`, we can turn `parse()` into the real deal:
 
 ^code parse
+
+<aside name="parse-error-handling">
+
+What about the code we had in here for catching `ParseError` exceptions? We'll
+put better parse error handling in place soon when we add support for additional
+statement types.
+
+</aside>
 
 It parses a series of statements, as many as it can find until it hits the end
 of the input. This is a pretty direct translation of the `program` rule into
@@ -415,17 +424,8 @@ The generated code for the new node is in [Appendix II][appendix-var-stmt].
 
 </aside>
 
-<span name="comma">It</span> stores the name token so we know what it's
-declaring, along with the initializer expression. (If there isn't an
-initializer, that's `null`.)
-
-<aside name="comma">
-
-The existing line for the Print statement is marked as being replaced because we
-need to add a comma at the end of it. Likewise in the next code snippet. Details
-matter!
-
-</aside>
+It stores the name token so we know what it's declaring, along with the
+initializer expression. (If there isn't an initializer, that's `null`.)
 
 Then we add an expression node for accessing a variable:
 

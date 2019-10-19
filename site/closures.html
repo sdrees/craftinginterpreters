@@ -177,11 +177,11 @@ those slower for the benefit of the rare local that is captured.</p>
 all.</p>
 </aside>
 <p>This means a more complex approach than we used in our Java interpreter. Because
-some locals have very different lifetimes, we will have two implementations
-strategies, one optimized for each. For locals that aren&rsquo;t used in closures,
-we&rsquo;ll keep them just as they are on the stack. When a local is captured by a
-closure, we&rsquo;ll adopt another solution that lifts them onto the heap where they
-can live as long as needed.</p>
+some locals have very different lifetimes, we will have two implementation
+strategies. For locals that aren&rsquo;t used in closures, we&rsquo;ll keep them just as
+they are on the stack. When a local is captured by a closure, we&rsquo;ll adopt
+another solution that lifts them onto the heap where they can live as long as
+needed.</p>
 <p>Closures have been around since the early Lisp days when bytes of memory and CPU
 cycles were more precious than emeralds. Over the intervening decades, hackers
 devised all <span name="lambda">manner</span> of ways to compile closures to
@@ -293,15 +293,14 @@ in enum <em>ObjType</em></div>
 <div class="source-file-narrow"><em>object.h</em>, in enum <em>ObjType</em></div>
 
 <p>And when we&rsquo;re done with a closure, we release its memory:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="k">switch</span> <span class="p">(</span><span class="n">object</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>                       
+<div class="codehilite"><pre class="insert-before"><span></span>  <span class="k">switch</span> <span class="p">(</span><span class="n">object</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>      
 </pre><div class="source-file"><em>memory.c</em><br>
 in <em>freeObject</em>()</div>
-<pre class="insert"><span></span>    <span class="k">case</span> <span class="nl">OBJ_CLOSURE</span><span class="p">:</span> <span class="p">{</span>                         
-      <span class="n">ObjClosure</span><span class="o">*</span> <span class="n">closure</span> <span class="o">=</span> <span class="p">(</span><span class="n">ObjClosure</span><span class="o">*</span><span class="p">)</span><span class="n">object</span><span class="p">;</span>
-      <span class="n">FREE</span><span class="p">(</span><span class="n">ObjClosure</span><span class="p">,</span> <span class="n">object</span><span class="p">);</span>                 
-      <span class="k">break</span><span class="p">;</span>                                    
-    <span class="p">}</span>                                           
-<br></pre><pre class="insert-after"><span></span>    <span class="k">case</span> <span class="nl">OBJ_FUNCTION</span><span class="p">:</span> <span class="p">{</span>                        
+<pre class="insert"><span></span>    <span class="k">case</span> <span class="nl">OBJ_CLOSURE</span><span class="p">:</span> <span class="p">{</span>        
+      <span class="n">FREE</span><span class="p">(</span><span class="n">ObjClosure</span><span class="p">,</span> <span class="n">object</span><span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span>                   
+    <span class="p">}</span>                          
+<br></pre><pre class="insert-after"><span></span>    <span class="k">case</span> <span class="nl">OBJ_FUNCTION</span><span class="p">:</span> <span class="p">{</span>       
 </pre></div>
 
 <div class="source-file-narrow"><em>memory.c</em>, in <em>freeObject</em>()</div>
@@ -725,6 +724,7 @@ created here:</p>
 <div class="codehilite"><div class="source-file"><em>compiler.c</em><br>
 add after <em>resolveLocal</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">addUpvalue</span><span class="p">(</span><span class="n">Compiler</span><span class="o">*</span> <span class="n">compiler</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">index</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">isLocal</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">upvalueCount</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">function</span><span class="o">-&gt;</span><span class="n">upvalueCount</span><span class="p">;</span>                  
   <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">[</span><span class="n">upvalueCount</span><span class="p">].</span><span class="n">isLocal</span> <span class="o">=</span> <span class="n">isLocal</span><span class="p">;</span>                   
   <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">[</span><span class="n">upvalueCount</span><span class="p">].</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>                       
   <span class="k">return</span> <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">function</span><span class="o">-&gt;</span><span class="n">upvalueCount</span><span class="o">++</span><span class="p">;</span>                            
@@ -759,17 +759,16 @@ multiple times. In that case, we don&rsquo;t want to waste time and memory creat
 separate upvalue for each identifier expression. To fix that, before we add a
 new upvalue, we first check to see if the function already has an upvalue that
 closes over that variable:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">addUpvalue</span><span class="p">(</span><span class="n">Compiler</span><span class="o">*</span> <span class="n">compiler</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">index</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">isLocal</span><span class="p">)</span> <span class="p">{</span>
+<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">int</span> <span class="n">upvalueCount</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">function</span><span class="o">-&gt;</span><span class="n">upvalueCount</span><span class="p">;</span>           
 </pre><div class="source-file"><em>compiler.c</em><br>
 in <em>addUpvalue</em>()</div>
-<pre class="insert"><span></span>  <span class="kt">int</span> <span class="n">upvalueCount</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">function</span><span class="o">-&gt;</span><span class="n">upvalueCount</span><span class="p">;</span>                  
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">upvalueCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>                              
-    <span class="n">Upvalue</span><span class="o">*</span> <span class="n">upvalue</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">compiler</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>                          
-    <span class="k">if</span> <span class="p">(</span><span class="n">upvalue</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span> <span class="o">&amp;&amp;</span> <span class="n">upvalue</span><span class="o">-&gt;</span><span class="n">isLocal</span> <span class="o">==</span> <span class="n">isLocal</span><span class="p">)</span> <span class="p">{</span>       
-      <span class="k">return</span> <span class="n">i</span><span class="p">;</span>                                                         
-    <span class="p">}</span>                                                                   
-  <span class="p">}</span>                                                                     
-<br></pre><pre class="insert-after"><span></span>  <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">[</span><span class="n">upvalueCount</span><span class="p">].</span><span class="n">isLocal</span> <span class="o">=</span> <span class="n">isLocal</span><span class="p">;</span>                   
+<pre class="insert"><br><span></span>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">upvalueCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>                       
+    <span class="n">Upvalue</span><span class="o">*</span> <span class="n">upvalue</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">compiler</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>                   
+    <span class="k">if</span> <span class="p">(</span><span class="n">upvalue</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span> <span class="o">&amp;&amp;</span> <span class="n">upvalue</span><span class="o">-&gt;</span><span class="n">isLocal</span> <span class="o">==</span> <span class="n">isLocal</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="n">i</span><span class="p">;</span>                                                  
+    <span class="p">}</span>                                                            
+  <span class="p">}</span>                                                              
+<br></pre><pre class="insert-after"><span></span>  <span class="n">compiler</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">[</span><span class="n">upvalueCount</span><span class="p">].</span><span class="n">isLocal</span> <span class="o">=</span> <span class="n">isLocal</span><span class="p">;</span>            
 </pre></div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, in <em>addUpvalue</em>()</div>
@@ -1003,8 +1002,11 @@ pair of operands specifies what that upvalue captures. If the first byte is one,
 it captures a local variable in the enclosing function. If zero, it captures one
 of the function&rsquo;s upvalues. The next byte is the local slot or upvalue index to
 capture.</p>
-<p>This odd encoding means we need some bespoke support in the disassembler:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>                                              
+<p>This odd encoding means we need some bespoke support in the disassembly code
+for <code>OP_CLOSURE</code>:</p>
+<div class="codehilite"><pre class="insert-before"><span></span>      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%-16s %4d &quot;</span><span class="p">,</span> <span class="s">&quot;OP_CLOSURE&quot;</span><span class="p">,</span> <span class="n">constant</span><span class="p">);</span>              
+      <span class="n">printValue</span><span class="p">(</span><span class="n">chunk</span><span class="o">-&gt;</span><span class="n">constants</span><span class="p">.</span><span class="n">values</span><span class="p">[</span><span class="n">constant</span><span class="p">]);</span>             
+      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>                                              
 <br></pre><div class="source-file"><em>debug.c</em><br>
 in <em>disassembleInstruction</em>()</div>
 <pre class="insert"><span></span>      <span class="n">ObjFunction</span><span class="o">*</span> <span class="n">function</span> <span class="o">=</span> <span class="n">AS_FUNCTION</span><span class="p">(</span>                       
@@ -1059,7 +1061,16 @@ in <em>disassembleInstruction</em>()</div>
 
 <div class="source-file-narrow"><em>debug.c</em>, in <em>disassembleInstruction</em>()</div>
 
-<p>These both have a single byte operand, so there&rsquo;s nothing exciting going on.</p>
+<p>These both have a single byte operand, so there&rsquo;s nothing exciting going on. We
+do need to add an include so the debug module can get to <code>AS_FUNCTION()</code>:</p>
+<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;debug.h&quot; </span><span class="cp"></span>
+</pre><div class="source-file"><em>debug.c</em></div>
+<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;object.h&quot;</span><span class="cp"></span>
+</pre><pre class="insert-after"><span></span><span class="cp">#include</span> <span class="cpf">&quot;value.h&quot; </span><span class="cp"></span>
+</pre></div>
+
+<div class="source-file-narrow"><em>debug.c</em></div>
+
 <p>With that, our compiler is where we want it. For each function declaration, it
 outputs an <code>OP_CLOSURE</code> instruction followed by a series of operand byte pairs
 for each upvalue it needs to capture at runtime. It&rsquo;s time to hop over to that
@@ -1228,11 +1239,12 @@ in <em>newClosure</em>()</div>
 <div class="source-file-narrow"><em>object.c</em>, in <em>newClosure</em>()</div>
 
 <p>When an ObjClosure is freed, we also free the upvalue array:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>      <span class="n">ObjClosure</span><span class="o">*</span> <span class="n">closure</span> <span class="o">=</span> <span class="p">(</span><span class="n">ObjClosure</span><span class="o">*</span><span class="p">)</span><span class="n">object</span><span class="p">;</span>                  
+<div class="codehilite"><pre class="insert-before"><span></span>    <span class="k">case</span> <span class="nl">OBJ_CLOSURE</span><span class="p">:</span> <span class="p">{</span>                                                
 </pre><div class="source-file"><em>memory.c</em><br>
 in <em>freeObject</em>()</div>
-<pre class="insert"><span></span>      <span class="n">FREE_ARRAY</span><span class="p">(</span><span class="n">Value</span><span class="p">,</span> <span class="n">closure</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">,</span> <span class="n">closure</span><span class="o">-&gt;</span><span class="n">upvalueCount</span><span class="p">);</span>
-</pre><pre class="insert-after"><span></span>      <span class="n">FREE</span><span class="p">(</span><span class="n">ObjClosure</span><span class="p">,</span> <span class="n">object</span><span class="p">);</span>                                   
+<pre class="insert"><span></span>      <span class="n">ObjClosure</span><span class="o">*</span> <span class="n">closure</span> <span class="o">=</span> <span class="p">(</span><span class="n">ObjClosure</span><span class="o">*</span><span class="p">)</span><span class="n">object</span><span class="p">;</span>                       
+      <span class="n">FREE_ARRAY</span><span class="p">(</span><span class="n">ObjUpvalue</span><span class="p">,</span> <span class="n">closure</span><span class="o">-&gt;</span><span class="n">upvalues</span><span class="p">,</span> <span class="n">closure</span><span class="o">-&gt;</span><span class="n">upvalueCount</span><span class="p">);</span>
+</pre><pre class="insert-after"><span></span>      <span class="n">FREE</span><span class="p">(</span><span class="n">ObjClosure</span><span class="p">,</span> <span class="n">object</span><span class="p">);</span>                                        
 </pre></div>
 
 <div class="source-file-narrow"><em>memory.c</em>, in <em>freeObject</em>()</div>
@@ -1368,7 +1380,7 @@ Here&rsquo;s another example that <em>should</em> work:</p>
 
 <p>But if you run it right now&hellip; who knows what it does? At runtime, it will end
 up reading from a stack slot that no longer contains the closed-over variable.
-Like I&rsquo;ve mention a few times, the crux of the issue is that variables in
+Like I&rsquo;ve mentioned a few times, the crux of the issue is that variables in
 closures don&rsquo;t have stack semantics. That means we&rsquo;ve got to hoist them off the
 stack when the function where they were declared returns. This final section of
 the chapter does that.</p>
@@ -1438,7 +1450,7 @@ two questions we need to answer are:</p>
 </ol>
 <p>The answer to the first question is easy. We already have a convenient object on
 the heap that represents a reference to a variable<span class="em">&mdash;</span>ObjUpvalue itself. The
-closed-over variable will move into a new field right inside the ObjValue
+closed-over variable will move into a new field right inside the ObjUpvalue
 struct. That way we don&rsquo;t need to do any additional heap allocation to close an
 upvalue.</p>
 <p>The second question is straightforward too. As long as the variable is on the
@@ -1576,8 +1588,8 @@ exact same storage location in memory. That way if one closure writes to the
 variable, the other closure sees the change.</p>
 <p>Right now, if two closures capture the same <span name="indirect">local</span>
 variable, the VM creates a separate Upvalue for each one. That breaks that
-sharing. When we move the variable off the heap, if we move into in only one of
-upvalues, the other will see an orphaned value.</p>
+sharing. When we move the variable off the heap, if we move it into only one of
+the upvalues, the other upvalue will have an orphaned value.</p>
 <aside name="indirect">
 <p>The VM <em>does</em> share upvalues if one closure captures an <em>upvalue</em> from a
 surrounding function. The nested case works correctly. But if two <em>sibling</em>
@@ -1739,8 +1751,8 @@ in <em>captureUpvalue</em>()</div>
 
 <div class="source-file-narrow"><em>vm.c</em>, in <em>captureUpvalue</em>()</div>
 
-<p>We already create the upvalue in the first incarnation of this function, so we
-only need to add code to insert it in the list. We exited the list traversal by
+<p>The current incarnation of this function already creates the upvalue, so we only
+need to add code to insert it in the list. We exited the list traversal by
 either going past the end of the list, or by stopping on the first upvalue whose
 stack slot is below the one we&rsquo;re looking for. In either case, that means we
 need to insert the new upvalue <em>before</em> <code>upvalue</code> (which may be <code>NULL</code> if we hit

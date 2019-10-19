@@ -76,11 +76,11 @@ all.
 </aside>
 
 This means a more complex approach than we used in our Java interpreter. Because
-some locals have very different lifetimes, we will have two implementations
-strategies, one optimized for each. For locals that aren't used in closures,
-we'll keep them just as they are on the stack. When a local is captured by a
-closure, we'll adopt another solution that lifts them onto the heap where they
-can live as long as needed.
+some locals have very different lifetimes, we will have two implementation
+strategies. For locals that aren't used in closures, we'll keep them just as
+they are on the stack. When a local is captured by a closure, we'll adopt
+another solution that lifts them onto the heap where they can live as long as
+needed.
 
 Closures have been around since the early Lisp days when bytes of memory and CPU
 cycles were more precious than emeralds. Over the intervening decades, hackers
@@ -720,9 +720,10 @@ it captures a local variable in the enclosing function. If zero, it captures one
 of the function's upvalues. The next byte is the local slot or upvalue index to
 capture.
 
-This odd encoding means we need some bespoke support in the disassembler:
+This odd encoding means we need some bespoke support in the disassembly code
+for `OP_CLOSURE`:
 
-^code disassemble-upvalues (2 before, 1 after)
+^code disassemble-upvalues (4 before, 1 after)
 
 For example, take this script:
 
@@ -755,7 +756,10 @@ We have two other, simpler instructions to add disassembler support for:
 
 ^code disassemble-upvalue-ops (2 before, 1 after)
 
-These both have a single byte operand, so there's nothing exciting going on.
+These both have a single byte operand, so there's nothing exciting going on. We
+do need to add an include so the debug module can get to `AS_FUNCTION()`:
+
+^code debug-include-object (1 before, 1 after)
 
 With that, our compiler is where we want it. For each function declaration, it
 outputs an `OP_CLOSURE` instruction followed by a series of operand byte pairs
@@ -976,7 +980,7 @@ closure();
 
 But if you run it right now... who knows what it does? At runtime, it will end
 up reading from a stack slot that no longer contains the closed-over variable.
-Like I've mention a few times, the crux of the issue is that variables in
+Like I've mentioned a few times, the crux of the issue is that variables in
 closures don't have stack semantics. That means we've got to hoist them off the
 stack when the function where they were declared returns. This final section of
 the chapter does that.
@@ -1062,7 +1066,7 @@ two questions we need to answer are:
 
 The answer to the first question is easy. We already have a convenient object on
 the heap that represents a reference to a variable -- ObjUpvalue itself. The
-closed-over variable will move into a new field right inside the ObjValue
+closed-over variable will move into a new field right inside the ObjUpvalue
 struct. That way we don't need to do any additional heap allocation to close an
 upvalue.
 
@@ -1165,8 +1169,8 @@ variable, the other closure sees the change.
 
 Right now, if two closures capture the same <span name="indirect">local</span>
 variable, the VM creates a separate Upvalue for each one. That breaks that
-sharing. When we move the variable off the heap, if we move into in only one of
-upvalues, the other will see an orphaned value.
+sharing. When we move the variable off the heap, if we move it into only one of
+the upvalues, the other upvalue will have an orphaned value.
 
 <aside name="indirect">
 
@@ -1294,8 +1298,8 @@ location:
 
 ^code insert-upvalue-in-list (1 before, 1 after)
 
-We already create the upvalue in the first incarnation of this function, so we
-only need to add code to insert it in the list. We exited the list traversal by
+The current incarnation of this function already creates the upvalue, so we only
+need to add code to insert it in the list. We exited the list traversal by
 either going past the end of the list, or by stopping on the first upvalue whose
 stack slot is below the one we're looking for. In either case, that means we
 need to insert the new upvalue *before* `upvalue` (which may be `NULL` if we hit

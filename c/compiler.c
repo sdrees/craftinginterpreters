@@ -443,8 +443,9 @@ static int resolveLocal(Compiler* compiler, Token* name) {
 //< Local Variables resolve-local
 //> Closures add-upvalue
 static int addUpvalue(Compiler* compiler, uint8_t index, bool isLocal) {
-//> existing-upvalue
   int upvalueCount = compiler->function->upvalueCount;
+//> existing-upvalue
+
   for (int i = 0; i < upvalueCount; i++) {
     Upvalue* upvalue = &compiler->upvalues[i];
     if (upvalue->index == index && upvalue->isLocal == isLocal) {
@@ -545,7 +546,9 @@ static uint8_t parseVariable(const char* errorMessage) {
 //< Global Variables parse-variable
 //> Local Variables mark-initialized
 static void markInitialized() {
+//> Calls and Functions check-depth
   if (current->scopeDepth == 0) return;
+//< Calls and Functions check-depth
   current->locals[current->localCount - 1].depth =
       current->scopeDepth;
 }
@@ -746,7 +749,6 @@ static void namedVariable(Token name, bool canAssign) {
   }
 //< Local Variables named-local
 /* Global Variables read-named-variable < Global Variables named-variable
-
   emitBytes(OP_GET_GLOBAL, arg);
 */
 //> named-variable
@@ -759,14 +761,14 @@ static void namedVariable(Token name, bool canAssign) {
 //< named-variable-can-assign
     expression();
 /* Global Variables named-variable < Local Variables emit-set
-    emitBytes(OP_SET_GLOBAL, (uint8_t)arg);
+    emitBytes(OP_SET_GLOBAL, arg);
 */
 //> Local Variables emit-set
     emitBytes(setOp, (uint8_t)arg);
 //< Local Variables emit-set
   } else {
 /* Global Variables named-variable < Local Variables emit-get
-    emitBytes(OP_GET_GLOBAL, (uint8_t)arg);
+    emitBytes(OP_GET_GLOBAL, arg);
 */
 //> Local Variables emit-get
     emitBytes(getOp, (uint8_t)arg);
@@ -1213,10 +1215,10 @@ static void forStatement() {
   consume(TOKEN_SEMICOLON, "Expect ';'.");
 */
 //> for-initializer
-  if (match(TOKEN_VAR)) {
-    varDeclaration();
-  } else if (match(TOKEN_SEMICOLON)) {
+  if (match(TOKEN_SEMICOLON)) {
     // No initializer.
+  } else if (match(TOKEN_VAR)) {
+    varDeclaration();
   } else {
     expressionStatement();
   }

@@ -43,7 +43,7 @@ typedef enum {
   PREC_TERM,        // + -
   PREC_FACTOR,      // * /
   PREC_UNARY,       // ! -
-  PREC_CALL,        // . () []
+  PREC_CALL,        // . ()
   PREC_PRIMARY
 } Precedence;
 //< precedence
@@ -1017,7 +1017,6 @@ static void parsePrecedence(Precedence precedence) {
 
   if (canAssign && match(TOKEN_EQUAL)) {
     error("Invalid assignment target.");
-    expression();
   }
 //< Global Variables invalid-assign
 //< infix
@@ -1030,7 +1029,7 @@ static ParseRule* getRule(TokenType type) {
 }
 //< Compiling Expressions get-rule
 //> Compiling Expressions expression
-void expression() {
+static void expression() {
 /* Compiling Expressions expression < Compiling Expressions expression-body
   // What goes here?
 */

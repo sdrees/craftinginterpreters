@@ -1143,7 +1143,7 @@ string, but that link should not be considered a root when determining
 reachability. That implies that the referenced object can be freed. When that
 happens, the dangling reference must be fixed too, sort of like a magic
 self-clearing pointer. This particular set of semantics comes up frequently
-enough that it has a name: a <a href="ttps://en.wikipedia.org/wiki/Weak_reference"><strong>weak reference.</strong></a></p>
+enough that it has a name: a <a href="https://en.wikipedia.org/wiki/Weak_reference"><strong>weak reference.</strong></a></p>
 <p>We have already implicitly implemented half of the string table&rsquo;s unique
 behavior by virtue of the fact that we <em>don&rsquo;t</em> traverse it during marking. That
 means it doesn&rsquo;t force strings to be reachable. The remaining piece is clearing
@@ -1220,8 +1220,8 @@ performance: <strong>throughput</strong> and <strong>latency</strong>.</p>
 user-authored deallocation. The time spent actually freeing memory is the same,
 but the GC spends cycles figuring out <em>which</em> memory to free. That is time <em>not</em>
 spent running the user&rsquo;s code and doing useful work. In our implementation,
-that&rsquo;s the entirety the mark phase falls under this. The goal of a sophisticated
-garbage collector is to minimize that overhead.</p>
+that&rsquo;s the entirety of the mark phase. The goal of a sophisticated garbage
+collector is to minimize that overhead.</p>
 <p>There are two key metrics we can use to understand that cost better:</p>
 <ul>
 <li>

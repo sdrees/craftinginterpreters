@@ -757,7 +757,7 @@ happens, the dangling reference must be fixed too, sort of like a magic
 self-clearing pointer. This particular set of semantics comes up frequently
 enough that it has a name: a [**weak reference.**][weak]
 
-[weak]: ttps://en.wikipedia.org/wiki/Weak_reference
+[weak]: https://en.wikipedia.org/wiki/Weak_reference
 
 We have already implicitly implemented half of the string table's unique
 behavior by virtue of the fact that we *don't* traverse it during marking. That
@@ -820,8 +820,8 @@ Evvery managed language has pays a performance price compared to explicit,
 user-authored deallocation. The time spent actually freeing memory is the same,
 but the GC spends cycles figuring out *which* memory to free. That is time *not*
 spent running the user's code and doing useful work. In our implementation,
-that's the entirety the mark phase falls under this. The goal of a sophisticated
-garbage collector is to minimize that overhead.
+that's the entirety of the mark phase. The goal of a sophisticated garbage
+collector is to minimize that overhead.
 
 There are two key metrics we can use to understand that cost better:
 

@@ -350,7 +350,7 @@ Its implementation is:
 
 Some Lox values -- numbers, Booleans, and `nil` -- are stored directly inline in
 Value and require no heap allocation. The garbage collector doesn't need to
-worry them at all, so the first thing we do is ensure that the value is an
+worry about them at all, so the first thing we do is ensure that the value is an
 actual heap object. If so, the real work happens in this function:
 
 ^code mark-object-h (1 before, 1 after)
@@ -816,7 +816,7 @@ a more subtle timing strategy. To reason about this more precisely, it's time
 to introduce two fundamental numbers used when measuring a memory manager's
 performance: **throughput** and **latency**.
 
-Evvery managed language has pays a performance price compared to explicit,
+Every managed language pays a performance price compared to explicit,
 user-authored deallocation. The time spent actually freeing memory is the same,
 but the GC spends cycles figuring out *which* memory to free. That is time *not*
 spent running the user's code and doing useful work. In our implementation,

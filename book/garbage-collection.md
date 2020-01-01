@@ -392,8 +392,8 @@ We implement that in the "table" module:
 
 ^code mark-table
 
-Pretty straightforward. We walk the entry array and mark every key string and
-value, uh, value.
+Pretty straightforward. We walk the entry array. For each one, we its value. We
+also mark the key strings for each entry since the GC manages those strings too.
 
 ### Less obvious roots
 
@@ -547,10 +547,18 @@ by the wavefront and stay white.
 
 <img src="image/garbage-collection/tricolor-trace.png" class="wide" alt="A gray wavefront working through a graph of nodes." />
 
-At the end, you're left with a sea of reached black objects sprinkled with
-islands of white objects that can be swept up and freed. Once the unreachable
-objects are freed, the remaining objects -- all black -- are reset to white for
-the next garbage collection cycle.
+At the <span name="invariant">end</span>, you're left with a sea of reached
+black objects sprinkled with islands of white objects that can be swept up and
+freed. Once the unreachable objects are freed, the remaining objects -- all
+black -- are reset to white for the next garbage collection cycle.
+
+<aside name="invariant">
+
+Note that at every step of this process no black node ever points to a white
+node. This property is called the **tri-color invariant**. The traversal process
+maintains this invariant to ensure that no reachable object is ever collected.
+
+</aside>
 
 ### A worklist for gray objects
 

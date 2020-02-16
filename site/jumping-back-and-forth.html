@@ -193,7 +193,7 @@ add after <em>expressionStatement</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">ifStatement</span><span class="p">()</span> <span class="p">{</span>                                            
   <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_LEFT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;(&#39; after &#39;if&#39;.&quot;</span><span class="p">);</span>                 
   <span class="n">expression</span><span class="p">();</span>                                                        
-  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_RIGHT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after condition.&quot;</span><span class="p">);</span> <span name="paren">&#8203;</span>
+  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_RIGHT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after condition.&quot;</span><span class="p">);</span><span name="paren"> </span>
 
   <span class="kt">int</span> <span class="n">thenJump</span> <span class="o">=</span> <span class="n">emitJump</span><span class="p">(</span><span class="n">OP_JUMP_IF_FALSE</span><span class="p">);</span>                           
   <span class="n">statement</span><span class="p">();</span>                                                         
@@ -979,7 +979,7 @@ That&rsquo;s a pretty good effort-to-reward ratio for the architecture of our VM
 </pre></div>
 
 
-<p>To execute a switch statement, first evaluate the parenthesed switch value
+<p>To execute a switch statement, first evaluate the parenthesized switch value
 expression. Then walk the cases. For each case, evaluate its value
 expression. If the case value is equal to the switch value, execute the
 statements under the case and then exit the switch statement. Otherwise, try

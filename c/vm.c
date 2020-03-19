@@ -51,12 +51,12 @@ static void runtimeError(const char* format, ...) {
   fputs("\n", stderr);
 
 /* Types of Values runtime-error < Calls and Functions runtime-error-temp
-  size_t instruction = vm.ip - vm.chunk->code;
+  size_t instruction = vm.ip - vm.chunk->code - 1;
   int line = vm.chunk->lines[instruction];
 */
 /* Calls and Functions runtime-error-temp < Calls and Functions runtime-error-stack
   CallFrame* frame = &vm.frames[vm.frameCount - 1];
-  size_t instruction = frame->ip - frame->function->chunk.code;
+  size_t instruction = frame->ip - frame->function->chunk.code - 1;
   int line = frame->function->chunk.lines[instruction];
 */
 /* Types of Values runtime-error < Calls and Functions runtime-error-stack
@@ -123,6 +123,9 @@ void initVM() {
 //< Hash Tables init-strings
 //> Methods and Initializers init-init-string
 
+//> null-init-string
+  vm.initString = NULL;
+//< null-init-string
   vm.initString = copyString("init", 4);
 //< Methods and Initializers init-init-string
 //> Calls and Functions define-native-clock
@@ -628,7 +631,7 @@ static InterpretResult run() {
         break;
       }
 //< Classes and Instances interpret-set-property
-//> Superclasses not-yet
+//> Superclasses interpret-get-super
 
       case OP_GET_SUPER: {
         ObjString* name = READ_STRING();
@@ -638,7 +641,7 @@ static InterpretResult run() {
         }
         break;
       }
-//< Superclasses not-yet
+//< Superclasses interpret-get-super
 //> Types of Values interpret-equal
 
       case OP_EQUAL: {
@@ -773,10 +776,10 @@ static InterpretResult run() {
       }
       
 //< Methods and Initializers interpret-invoke
-//> Superclasses not-yet
-      case OP_SUPER: {
-        int argCount = READ_BYTE();
+//> Superclasses interpret-super-invoke
+      case OP_SUPER_INVOKE: {
         ObjString* method = READ_STRING();
+        int argCount = READ_BYTE();
         ObjClass* superclass = AS_CLASS(pop());
         if (!invokeFromClass(superclass, method, argCount)) {
           return INTERPRET_RUNTIME_ERROR;
@@ -785,7 +788,7 @@ static InterpretResult run() {
         break;
       }
 
-//< Superclasses not-yet
+//< Superclasses interpret-super-invoke
 //> Closures interpret-closure
       case OP_CLOSURE: {
         ObjFunction* function = AS_FUNCTION(READ_CONSTANT());
@@ -850,21 +853,23 @@ static InterpretResult run() {
         push(OBJ_VAL(newClass(READ_STRING())));
         break;
 //< Classes and Instances interpret-class
-//> Superclasses not-yet
+//> Superclasses interpret-inherit
 
       case OP_INHERIT: {
         Value superclass = peek(1);
+//> inherit-non-class
         if (!IS_CLASS(superclass)) {
           runtimeError("Superclass must be a class.");
           return INTERPRET_RUNTIME_ERROR;
         }
 
+//< inherit-non-class
         ObjClass* subclass = AS_CLASS(peek(0));
         tableAddAll(&AS_CLASS(superclass)->methods, &subclass->methods);
         pop(); // Subclass.
         break;
       }
-//< Superclasses not-yet
+//< Superclasses interpret-inherit
 //> Methods and Initializers interpret-method
 
       case OP_METHOD:

@@ -228,11 +228,13 @@ static bool callValue(Value callee, int argCount) {
         vm.stackTop[-argCount - 1] = OBJ_VAL(newInstance(klass));
 //> Methods and Initializers call-init
         Value initializer;
-        if (tableGet(&klass->methods, vm.initString, &initializer)) {
+        if (tableGet(&klass->methods, vm.initString,
+                     &initializer)) {
           return call(AS_CLOSURE(initializer), argCount);
 //> no-init-arity-error
         } else if (argCount != 0) {
-          runtimeError("Expected 0 arguments but got %d.", argCount);
+          runtimeError("Expected 0 arguments but got %d.",
+                       argCount);
           return false;
 //< no-init-arity-error
         }
@@ -244,14 +246,13 @@ static bool callValue(Value callee, int argCount) {
 //> Closures call-value-closure
       case OBJ_CLOSURE:
         return call(AS_CLOSURE(callee), argCount);
-
 //< Closures call-value-closure
 /* Calls and Functions call-value < Closures call-value-closure
       case OBJ_FUNCTION: // [switch]
         return call(AS_FUNCTION(callee), argCount);
-
 */
 //> call-native
+        
       case OBJ_NATIVE: {
         NativeFn native = AS_NATIVE(callee);
         Value result = native(argCount, vm.stackTop - argCount);
@@ -315,7 +316,8 @@ static bool bindMethod(ObjClass* klass, ObjString* name) {
     return false;
   }
 
-  ObjBoundMethod* bound = newBoundMethod(peek(0), AS_CLOSURE(method));
+  ObjBoundMethod* bound = newBoundMethod(peek(0),
+                                         AS_CLOSURE(method));
   pop();
   push(OBJ_VAL(bound));
   return true;
@@ -332,7 +334,9 @@ static ObjUpvalue* captureUpvalue(Value* local) {
     upvalue = upvalue->next;
   }
 
-  if (upvalue != NULL && upvalue->location == local) return upvalue;
+  if (upvalue != NULL && upvalue->location == local) {
+    return upvalue;
+  }
 
 //< look-for-existing-upvalue
   ObjUpvalue* createdUpvalue = newUpvalue(local);
@@ -415,7 +419,8 @@ static InterpretResult run() {
 */
 #define READ_BYTE() (*frame->ip++)
 #define READ_SHORT() \
-    (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
+    (frame->ip += 2, \
+    (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
 //< Calls and Functions run
 /* Calls and Functions run < Closures read-constant
 #define READ_CONSTANT() \
@@ -446,7 +451,6 @@ static InterpretResult run() {
         runtimeError("Operands must be numbers."); \
         return INTERPRET_RUNTIME_ERROR; \
       } \
-      \
       double b = AS_NUMBER(pop()); \
       double a = AS_NUMBER(pop()); \
       push(valueType(a op b)); \
@@ -466,7 +470,8 @@ static InterpretResult run() {
     printf("\n");
 //< trace-stack
 /* A Virtual Machine trace-execution < Calls and Functions trace-execution
-    disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
+    disassembleInstruction(vm.chunk,
+                           (int)(vm.ip - vm.chunk->code));
 */
 /* Calls and Functions trace-execution < Closures disassemble-instruction
     disassembleInstruction(&frame->function->chunk,
@@ -677,7 +682,8 @@ static InterpretResult run() {
           double a = AS_NUMBER(pop());
           push(NUMBER_VAL(a + b));
         } else {
-          runtimeError("Operands must be two numbers or two strings.");
+          runtimeError(
+              "Operands must be two numbers or two strings.");
           return INTERPRET_RUNTIME_ERROR;
         }
         break;
@@ -799,7 +805,8 @@ static InterpretResult run() {
           uint8_t isLocal = READ_BYTE();
           uint8_t index = READ_BYTE();
           if (isLocal) {
-            closure->upvalues[i] = captureUpvalue(frame->slots + index);
+            closure->upvalues[i] =
+                captureUpvalue(frame->slots + index);
           } else {
             closure->upvalues[i] = frame->closure->upvalues[index];
           }
@@ -817,12 +824,12 @@ static InterpretResult run() {
 
 //< Closures interpret-close-upvalue
       case OP_RETURN: {
-/* Global Variables op-return < Calls and Functions interpret-return
-        // Exit interpreter.
-*/
 /* A Virtual Machine print-return < Global Variables op-return
         printValue(pop());
         printf("\n");
+*/
+/* Global Variables op-return < Calls and Functions interpret-return
+        // Exit interpreter.
 */
 /* A Virtual Machine run < Calls and Functions interpret-return
         return INTERPRET_OK;
@@ -865,7 +872,8 @@ static InterpretResult run() {
 
 //< inherit-non-class
         ObjClass* subclass = AS_CLASS(peek(0));
-        tableAddAll(&AS_CLASS(superclass)->methods, &subclass->methods);
+        tableAddAll(&AS_CLASS(superclass)->methods,
+                    &subclass->methods);
         pop(); // Subclass.
         break;
       }

@@ -20,7 +20,7 @@ void writeValueArray(ValueArray* array, Value value) {
   if (array->capacity < array->count + 1) {
     int oldCapacity = array->capacity;
     array->capacity = GROW_CAPACITY(oldCapacity);
-    array->values = GROW_ARRAY(array->values, Value,
+    array->values = GROW_ARRAY(Value, array->values,
                                oldCapacity, array->capacity);
   }
   
@@ -57,11 +57,13 @@ void printValue(Value value) {
  */
 //> Types of Values print-value
   switch (value.type) {
-    case VAL_BOOL:   printf(AS_BOOL(value) ? "true" : "false"); break;
-    case VAL_NIL:    printf("nil"); break;
+    case VAL_BOOL:
+      printf(AS_BOOL(value) ? "true" : "false");
+      break;
+    case VAL_NIL: printf("nil"); break;
     case VAL_NUMBER: printf("%g", AS_NUMBER(value)); break;
 //> Strings call-print-object
-    case VAL_OBJ:    printObject(value); break;
+    case VAL_OBJ: printObject(value); break;
 //< Strings call-print-object
   }
 //< Types of Values print-value
@@ -75,7 +77,9 @@ bool valuesEqual(Value a, Value b) {
 //> Optimization values-equal
 #ifdef NAN_BOXING
 //> nan-equality
-  if (IS_NUMBER(a) && IS_NUMBER(b)) return AS_NUMBER(a) == AS_NUMBER(b);
+  if (IS_NUMBER(a) && IS_NUMBER(b)) {
+    return AS_NUMBER(a) == AS_NUMBER(b);
+  }
 //< nan-equality
   return a == b;
 #else
@@ -91,12 +95,15 @@ bool valuesEqual(Value a, Value b) {
       ObjString* aString = AS_STRING(a);
       ObjString* bString = AS_STRING(b);
       return aString->length == bString->length &&
-          memcmp(aString->chars, bString->chars, aString->length) == 0;
+          memcmp(aString->chars, bString->chars,
+                 aString->length) == 0;
     }
  */
 //> Hash Tables equal
     case VAL_OBJ:    return AS_OBJ(a) == AS_OBJ(b);
 //< Hash Tables equal
+    default:
+      return false; // Unreachable.
   }
 //> Optimization end-values-equal
 #endif

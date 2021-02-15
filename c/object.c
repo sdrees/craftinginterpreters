@@ -38,7 +38,8 @@ static Obj* allocateObject(size_t size, ObjType type) {
 }
 //< allocate-object
 //> Methods and Initializers new-bound-method
-ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method) {
+ObjBoundMethod* newBoundMethod(Value receiver,
+                               ObjClosure* method) {
   ObjBoundMethod* bound = ALLOCATE_OBJ(ObjBoundMethod,
                                        OBJ_BOUND_METHOD);
   bound->receiver = receiver;
@@ -59,7 +60,8 @@ ObjClass* newClass(ObjString* name) {
 //> Closures new-closure
 ObjClosure* newClosure(ObjFunction* function) {
 //> allocate-upvalue-array
-  ObjUpvalue** upvalues = ALLOCATE(ObjUpvalue*, function->upvalueCount);
+  ObjUpvalue** upvalues = ALLOCATE(ObjUpvalue*,
+                                   function->upvalueCount);
   for (int i = 0; i < function->upvalueCount; i++) {
     upvalues[i] = NULL;
   }
@@ -136,7 +138,7 @@ static uint32_t hashString(const char* key, int length) {
   uint32_t hash = 2166136261u;
 
   for (int i = 0; i < length; i++) {
-    hash ^= key[i];
+    hash ^= (uint8_t)key[i];
     hash *= 16777619;
   }
 
@@ -211,16 +213,16 @@ static void printFunction(ObjFunction* function) {
 //> print-object
 void printObject(Value value) {
   switch (OBJ_TYPE(value)) {
-//> Classes and Instances print-class
-    case OBJ_CLASS:
-      printf("%s", AS_CLASS(value)->name->chars);
-      break;
-//< Classes and Instances print-class
 //> Methods and Initializers print-bound-method
     case OBJ_BOUND_METHOD:
       printFunction(AS_BOUND_METHOD(value)->method->function);
       break;
 //< Methods and Initializers print-bound-method
+//> Classes and Instances print-class
+    case OBJ_CLASS:
+      printf("%s", AS_CLASS(value)->name->chars);
+      break;
+//< Classes and Instances print-class
 //> Closures print-closure
     case OBJ_CLOSURE:
       printFunction(AS_CLOSURE(value)->function);
@@ -233,7 +235,8 @@ void printObject(Value value) {
 //< Calls and Functions print-function
 //> Classes and Instances print-instance
     case OBJ_INSTANCE:
-      printf("%s instance", AS_INSTANCE(value)->klass->name->chars);
+      printf("%s instance",
+             AS_INSTANCE(value)->klass->name->chars);
       break;
 //< Classes and Instances print-instance
 //> Calls and Functions print-native

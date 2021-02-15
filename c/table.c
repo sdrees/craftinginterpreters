@@ -109,8 +109,8 @@ static void adjustCapacity(Table* table, int capacity) {
     entries[i].key = NULL;
     entries[i].value = NIL_VAL;
   }
-  
 //> re-hash
+
 //> resize-init-count
   table->count = 0;
 //< resize-init-count
@@ -203,8 +203,8 @@ void tableAddAll(Table* from, Table* to) {
 }
 //< table-add-all
 //> table-find-string
-ObjString* tableFindString(Table* table, const char* chars, int length,
-                           uint32_t hash) {
+ObjString* tableFindString(Table* table, const char* chars,
+                           int length, uint32_t hash) {
   if (table->count == 0) return NULL;
 
 /* Hash Tables table-find-string < Optimization find-string-index

@@ -1,13 +1,17 @@
 //> Chunks of Bytecode value-h
 #ifndef clox_value_h
 #define clox_value_h
+//> Optimization include-string
+
+#include <string.h>
+//< Optimization include-string
 
 #include "common.h"
 
 //> Strings forward-declare-obj
-typedef struct sObj Obj;
+typedef struct Obj Obj;
 //> forward-declare-obj-string
-typedef struct sObjString ObjString;
+typedef struct ObjString ObjString;
 //< forward-declare-obj-string
 
 //< Strings forward-declare-obj
@@ -31,25 +35,27 @@ typedef uint64_t Value;
 //> is-number
 
 //> is-bool
-#define IS_BOOL(v)      (((v) & FALSE_VAL) == FALSE_VAL)
+#define IS_BOOL(value)      (((value) | 1) == TRUE_VAL)
 //< is-bool
 //> is-nil
-#define IS_NIL(v)       ((v) == NIL_VAL)
+#define IS_NIL(value)       ((value) == NIL_VAL)
 //< is-nil
-#define IS_NUMBER(v)    (((v) & QNAN) != QNAN)
+#define IS_NUMBER(value)    (((value) & QNAN) != QNAN)
 //< is-number
 //> is-obj
-#define IS_OBJ(v)       (((v) & (QNAN | SIGN_BIT)) == (QNAN | SIGN_BIT))
+#define IS_OBJ(value) \
+    (((value) & (QNAN | SIGN_BIT)) == (QNAN | SIGN_BIT))
 //< is-obj
 //> as-number
 
 //> as-bool
-#define AS_BOOL(v)      ((v) == TRUE_VAL)
+#define AS_BOOL(value)      ((value) == TRUE_VAL)
 //< as-bool
-#define AS_NUMBER(v)    valueToNum(v)
+#define AS_NUMBER(value)    valueToNum(value)
 //< as-number
 //> as-obj
-#define AS_OBJ(v)       ((Obj*)(uintptr_t)((v) & ~(SIGN_BIT | QNAN)))
+#define AS_OBJ(value) \
+    ((Obj*)(uintptr_t)((value) & ~(SIGN_BIT | QNAN)))
 //< as-obj
 //> number-val
 
@@ -69,27 +75,20 @@ typedef uint64_t Value;
 #define OBJ_VAL(obj) \
     (Value)(SIGN_BIT | QNAN | (uint64_t)(uintptr_t)(obj))
 //< obj-val
-//> double-union
-
-typedef union {
-  uint64_t bits;
-  double num;
-} DoubleUnion;
-//< double-union
 //> value-to-num
 
 static inline double valueToNum(Value value) {
-  DoubleUnion data;
-  data.bits = value;
-  return data.num;
+  double num;
+  memcpy(&num, &value, sizeof(Value));
+  return num;
 }
 //< value-to-num
 //> num-to-value
 
 static inline Value numToValue(double num) {
-  DoubleUnion data;
-  data.num = num;
-  return data.bits;
+  Value value;
+  memcpy(&value, &num, sizeof(double));
+  return value;
 }
 //< num-to-value
 
@@ -141,11 +140,11 @@ typedef struct {
 //< Types of Values as-macros
 //> Types of Values value-macros
 
-#define BOOL_VAL(value)   ((Value){ VAL_BOOL, { .boolean = value } })
-#define NIL_VAL           ((Value){ VAL_NIL, { .number = 0 } })
-#define NUMBER_VAL(value) ((Value){ VAL_NUMBER, { .number = value } })
+#define BOOL_VAL(value)   ((Value){VAL_BOOL, {.boolean = value}})
+#define NIL_VAL           ((Value){VAL_NIL, {.number = 0}})
+#define NUMBER_VAL(value) ((Value){VAL_NUMBER, {.number = value}})
 //> Strings obj-val
-#define OBJ_VAL(object)   ((Value){ VAL_OBJ, { .obj = (Obj*)object } })
+#define OBJ_VAL(object)   ((Value){VAL_OBJ, {.obj = (Obj*)object}})
 //< Strings obj-val
 //< Types of Values value-macros
 //> Optimization end-if-nan-boxing

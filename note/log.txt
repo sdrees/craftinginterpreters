@@ -1,3 +1,284 @@
+2021/02/10 - copy edits for local variables and jumping back and forth
+2021/02/09 - copy edits for strings, hash tables, and global variables
+2021/02/08 - copy edits for compiling expressions and types of values
+2021/02/07 - weekend
+2021/02/06 - weekend
+2021/02/05 - copy edits for chunks of bytecode, a virtual machine, and scanning
+2021/02/04 - copy edits for classes and inheritance
+2021/02/03 - copy edits for resolving and binding
+2021/02/02 - copy edits for control flow and functions
+2021/02/01 - copy edits for evaluating expressions and statements and state
+2021/01/31 - weekend
+2021/01/30 - weekend
+2021/01/29 - copy edits for parsing expressions
+2021/01/28 - copy edits for representing code
+2021/01/27 - copy edits for the lox language
+2021/01/26 - change ellipse formatting, copy edits for a map of the territory
+2021/01/25 - copy edits for introduction, appendices, and section pages
+2021/01/24 - weekend
+2021/01/23 - weekend
+2021/01/22 - make 8x10 layout
+2021/01/21 - email
+2021/01/20 - email
+2021/01/19 - email
+2021/01/18 - mlk
+2021/01/17 - weekend
+2021/01/16 - weekend
+2021/01/15 - 4 issues and prs
+2021/01/14 - fix illustrations, 6 issues
+2021/01/13 - 3 issues
+2021/01/12 - finish custom interpreters in test runner
+2021/01/11 - 1 issue, work on custom interpreters in the test runner
+2021/01/10 - weekend
+2021/01/09 - weekend
+2021/01/08 - 1 issue
+2021/01/07 - 8 issues and prs
+2021/01/06 - font research
+2021/01/05 - sync changes with copy editor
+2020/12/24 - 2020/01/04 holiday break
+2020/12/23 - 9585 words, edit optimization and appendices
+2020/12/22 - 4602 words, edit superclasses
+2020/12/21 - 8427 words, edit methods and initializers
+2020/12/20 - weekend
+2020/12/19 - weekend
+2020/12/18 - 1559 words, finish classes and instances
+2020/12/17 - 1025 words, classes and instances
+2020/12/16 - 1254 words, classes and instances
+2020/12/15 - 9286 words, edit garbage collection
+2020/12/14 - 5833 words, finish closures
+2020/12/13 - weekend
+2020/12/12 - weekend
+2020/12/11 - 4735 words, finish calls and functions
+2020/12/10 - 5192 words, finish calls and functions
+2020/12/09 - 4301 words, calls and functions
+2020/12/08 - email
+2020/12/07 - 2604 words, finish jumping back and forth
+2020/12/06 - weekend
+2020/12/05 - weekend
+2020/12/04 - 1431 words, jumping back and forth
+2020/12/03 - 2218 words, jumping back and forth
+2020/12/02 - 4669 words, edit local variables
+2020/12/01 - editing
+2020/11/30 - 4756 words, edit global variables
+2020/11/29 - weekend
+2020/11/28 - weekend
+2020/11/27 - 4523 words, finish hash tables
+2020/11/26 - 3992 words, hash tables
+2020/11/25 - email, 3 issues
+2020/11/24 - email
+2020/11/23 - email
+2020/11/22 - weekend
+2020/11/21 - weekend
+2020/11/20 - email
+2020/11/19 - 8 issues
+2020/11/18 - update style guide, better word count
+2020/11/17 - 5275 words, edit strings
+2020/11/16 - email
+2020/11/15 - weekend
+2020/11/14 - weekend
+2020/11/13 - 1949 words, finish types of values
+2020/11/12 - 2691 words, types of values
+2020/11/11 - 4178 words, finish compiling expressions
+2020/11/10 - 446 words, compiling expressions
+2020/11/09 - 1882 words, compiling expressions
+2020/11/08 - weekend
+2020/11/07 - weekend
+2020/11/06 - 5374 words, edit scanning on demand
+2020/11/05 - 1990 words, finish a virtual machine
+2020/11/04 - 3302 words, a virtual machine
+2020/11/03 - 759 words, a virtual machine
+2020/11/02 - 5813 words, finish chunks of bytecode
+2020/11/01 - weekend
+2020/10/31 - weekend
+2020/10/30 - 1883 words, chunks of bytecode
+2020/10/29 - 160 words, a bytecode vm
+2020/10/28 - 11 issues and prs
+2020/10/27 - 2112 words, finish inheritance
+2020/10/26 - 1966 words, inheritance
+2020/10/25 - weekend
+2020/10/24 - weekend
+2020/10/23 - 2088 words, finish classes
+2020/10/22 - 3677 words, classes
+2020/10/21 - 742 words, classes
+2020/10/20 - 1067 words, classes
+2020/10/19 - 3731 words, finish resolving and binding
+2020/10/18 - weekend
+2020/10/17 - weekend
+2020/10/16 - 2624 words, resolving and binding
+2020/10/15 - 2878 words, finish functions
+2020/10/14 - 2598 words, functions
+2020/10/13 - 967 words, functions
+2020/10/12 - 1887 words, finish control flow
+2020/10/11 - weekend
+2020/10/10 - weekend
+2020/10/09 - 2545 words, control flow
+2020/10/08 - 2771 words, finish statements and state
+2020/10/07 - 3934 words, statements and state
+2020/10/06 - 1749 words, statements and state
+2020/10/05 - 1 issue
+2020/10/04 - weekend
+2020/10/03 - weekend
+2020/10/02 - 4 issues
+2020/10/01 - 5 issues
+2020/09/30 - 2301 words, finish evaluating expressions
+2020/09/29 - 1549 words, evaluating expressions
+2020/09/28 - 613 words, evaluating expressions
+2020/09/27 - weekend
+2020/09/26 - weekend
+2020/09/25 - finish long lines
+2020/09/24 - work on long lines
+2020/09/23 - 2926 words, finish parsing expressions
+2020/09/22 - 1308 words, parsing expressions
+2020/09/21 - 1820 words, parsing expressions
+2020/09/20 - weekend
+2020/09/19 - weekend
+2020/09/18 - fix 8 issues
+2020/09/17 - 3422 words, finish representing code
+2020/09/16 - 2805 words, representing code
+2020/09/15 - 2604 words, finish scanning
+2020/09/14 - 596 words, scanning
+2020/09/13 - weekend
+2020/09/12 - weekend
+2020/09/11 - 2273 words, scanning
+2020/09/10 - ~5900 words, the lox language and a tree-walk interpreter
+2020/09/09 - 1030 words, finish a map of the territory
+2020/09/08 - 3795 words, a map of the territory
+2020/09/07 - labor day
+2020/09/06 - weekend
+2020/09/05 - weekend
+2020/09/04 - 1221 words, finish introduction
+2020/09/03 - 2533 words, welcome and introduction
+2020/09/02 - couple of issues
+2020/09/01 - 12 issues and prs
+2020/08/31 - weekend
+2020/08/30 - weekend
+2020/08/29 - design note styles, xml export
+2020/08/28 - more xml export
+2020/08/27 - more xml export
+2020/08/26 - more xml export
+2020/08/25 - work on lists
+2020/08/24 - challenge styles
+2020/08/23 - work on indesign styles, set up printer, test prints
+2020/08/22 - weekend
+2020/08/21 - weekend
+2020/08/20 - work on indesign styles
+2020/08/19 - work on indesign scripting
+2020/08/18 - work on indesign scripting
+2020/08/17 - work on indesign scripting
+2020/08/17 - work on indesign scripting
+2020/08/16 - weekend
+2020/08/15 - weekend
+2020/08/14 - work on indesign scripting
+2020/08/13 - work on indesign scripting
+2020/08/12 - work on indesign scripting
+2020/08/11 - work on indesign scripting
+2020/08/10 - more work on print design
+2020/08/09 - more work on print design
+2020/08/08 - weekend
+2020/08/07 - more work on print design
+2020/08/06 - more work on print design
+2020/08/05 - work on code line length for print
+2020/08/04 - more work on xml export and indesign styles
+2020/08/03 - more work on xml export and indesign styles
+2020/08/02 - weekend
+2020/08/01 - weekend
+2020/07/31 - vacation
+2020/07/30 - vacation
+2020/07/29 - vacation
+2020/07/28 - vacation
+2020/07/27 - vacation
+2020/07/26 - more work on xml export and indesign styles
+2020/07/25 - scan references, work on xml export
+2020/07/24 - typos and email
+2020/07/23 - work on page layout
+2020/07/22 - fix #680
+2020/07/21 - email
+2020/07/20 - fix #683
+2020/07/19 - weekend
+2020/07/18 - weekend
+2020/07/17 - fix #693
+2020/07/16 - 3 issues
+2020/07/15 - get rest of chapter snippets compiling
+2020/07/14 - 1 issue
+2020/07/13 - 6 issues
+2020/07/12 - finish type punning, one other issue
+2020/07/11 - weekend
+2020/07/10 - work on type punning
+2020/07/09 - email
+2020/07/08 - 5 issues
+2020/07/07 - 1 issue
+2020/07/06 - 2 issues
+2020/07/05 - weekend
+2020/07/04 - weekend
+2020/07/03 - fix #635
+2020/07/02 - use code font for statement types
+2020/07/01 - email and issues
+2020/06/30 - email
+2020/06/29 - three issues and prs
+2020/06/28 - weekend
+2020/06/27 - weekend
+2020/06/26 - 404 page
+2020/06/25 - 2 issues
+2020/06/24 - bugs and email
+2020/06/23 - bugs
+2020/06/22 - fix a few issues, fix aside markers in context lines
+2020/06/21 - weekend
+2020/06/20 - weekend
+2020/06/19 - email and issues
+2020/06/18 - close a few issues
+2020/06/17 - email
+2020/06/16 - 3 issues
+2020/06/15 - 9 prs and issues
+2020/06/12 - email
+2020/06/11 - email
+2020/06/10 - fix trailing whitespace css issue
+2020/06/09 - work on trailing whitespace css issue
+2020/06/08 - work on trailing whitespace css issue
+2020/06/07 - email and bug fixes
+2020/06/06 - weekend
+2020/06/05 - fix bugs
+2020/06/04 - email
+2020/06/03 - fix bugs
+2020/06/02 - fix bugs
+2020/06/01 - port benchmark.py to dart
+2020/05/31 - more output clean up, ebnf grammar
+2020/05/30 - bunch of clean up in html output
+2020/05/29 - switch over to dart tools
+2020/05/28 - port test.py to dart
+2020/05/27 - port split_chapters and compile_snippets to dart
+2020/05/26 - port build system to dart
+2020/05/25 - port build system to dart
+2020/05/24 - port build system to dart, fix missing context lines
+2020/05/23 - port build system to dart
+2020/05/22 - port build system to dart
+2020/05/21 - port build system to dart
+2020/05/20 - port build system to dart
+2020/05/19 - port build system to dart
+2020/05/18 - port build system to dart
+2020/05/17 - port build system to dart
+2020/05/16 - weekend
+2020/05/15 - work on page layout
+2020/05/14 - start work on page layout
+2020/05/13 - email
+2020/05/12 - email
+2020/05/11 - email
+2020/05/10 - weekend
+2020/05/09 - weekend
+2020/05/08 - email and issues
+2020/05/07 - email and issues
+2020/05/06 - email and issues
+2020/05/05 - 17 prs and issues
+2020/05/04 - email
+2020/05/03 - weekend
+2020/05/02 - weekend
+2020/05/01 - email
+2020/04/30 - talk to editor
+2020/04/29 - email
+2020/04/28 - file washington taxes, email
+2020/04/27 - start catching up on email
+*** nice long break ***
+2020/04/05 - edit blog post, publish chapter, DONE!
+2020/04/04 - write blog post
 2020/04/03 - 9494 words, third draft "optimization"
 2020/04/02 - 6670 words, finish second draft "optimization"
 2020/04/01 - 3743 words, second draft "optimization"

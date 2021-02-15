@@ -1,6 +1,3 @@
-^title Compiling Expressions
-^part A Bytecode Virtual Machine
-
 > In the middle of the journey of our life I found myself within a dark woods
 > where the straight way was lost.
 >
@@ -35,7 +32,7 @@ It deals with precedence and associativity without breaking a sweat. I love it.
 
 Pratt parsers are a sort of oral tradition in industry. No compiler or language
 book I've read teaches them. Academia is very focused on generated parsers, and
-Pratt's technique is for hand-written ones, so it gets overlooked.
+Pratt's technique is for handwritten ones, so it gets overlooked.
 
 But in production compilers, where hand-rolled parsers are common, you'd be
 surprised how many people know it. Ask where they learned it, and it's always,
@@ -47,7 +44,7 @@ this old front end..."
 As usual, before we get to the fun stuff, we've got some preliminaries to work
 through. You have to eat your vegetables before you get dessert. First, let's
 ditch that temporary scaffolding we wrote for testing the scanner and replace it
-with something more useful:
+with something more useful.
 
 ^code interpret-chunk (1 before, 1 after)
 
@@ -59,15 +56,15 @@ chunk.
 
 Otherwise, we send the completed chunk over to the VM to be executed. When the
 VM finishes, we free the chunk and we're done. As you can see, the signature to
-`compile()` is different now:
+`compile()` is different now.
 
 ^code compile-h (2 before, 2 after)
 
 We pass in the chunk where the compiler will write the code, and then
-`compile()` returns whether or not compilation succeeded. Over in the
-implementation...
+`compile()` returns whether or not compilation succeeded. We make the same
+change to the signature in the implementation.
 
-^code compile-signature (1 before, 1 after)
+^code compile-signature (2 before, 1 after)
 
 That call to `initScanner()` is the only line that survives this chapter. Rip
 out the temporary code we wrote to test the scanner and replace it with these
@@ -98,7 +95,7 @@ algorithm, that table grows additional columns.
 
 If this chapter isn't clicking with you and you'd like another take on the
 concepts, I wrote an article that teaches the same algorithm but using Java and
-an object-oriented style: [Pratt Parsing: Expression Parsing Made Easy][blog].
+an object-oriented style: ["Pratt Parsing: Expression Parsing Made Easy"][blog].
 
 [blog]: http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/
 
@@ -116,7 +113,7 @@ A compiler has roughly two jobs. It parses the user's source code to understand
 what it means. Then it takes that knowledge and outputs low-level instructions
 that produce the same semantics. Many languages split those two roles into two
 separate <span name="passes">passes</span> in the implementation. A parser
-produces an AST -- just like jlox does -- and then a "code generator" traverses
+produces an AST -- just like jlox does -- and then a code generator traverses
 the AST and outputs target code.
 
 <aside name="passes">
@@ -129,17 +126,17 @@ area of research" and a "dark art".
 
 </aside>
 
-In clox, we're taking an old school approach and merging these two passes into
+In clox, we're taking an old-school approach and merging these two passes into
 one. Back in the day, language hackers did this because computers literally
 didn't have enough memory to store an entire source file's AST. We're doing it
 because it keeps our compiler simpler, which is a real asset when programming in
 C.
 
-"Single-pass compilers" like we're going to build don't work well for all
-languages. Since the compiler only has a peephole view into the user's program
+Single-pass compilers like we're going to build don't work well for all
+languages. Since the compiler has only a peephole view into the user's program
 while generating code, the language must be designed such that you don't need
 much surrounding context to understand a piece of syntax. Fortunately, tiny,
-dynamically-typed Lox is <span name="lox">well-suited</span> to that.
+dynamically typed Lox is <span name="lox">well-suited</span> to that.
 
 <aside name="lox">
 
@@ -157,29 +154,29 @@ emitting bytecode and adding constants to the destination chunk. (And it means
 I'll use "parsing" and "compiling" interchangeably throughout this and later
 chapters.)
 
-We'll build those two ends up first. Then we'll stitch them together with the
-code in the middle that uses Pratt's technique to parse Lox's particular grammar
-and output the right bytecode.
+We'll build the parsing and code generation halves first. Then we'll stitch them
+together with the code in the middle that uses Pratt's technique to parse Lox's
+particular grammar and output the right bytecode.
 
 ## Parsing Tokens
 
 First up, the front half of the compiler. This function's name should sound
-familiar:
+familiar.
 
 ^code advance (1 before)
 
 Just like in jlox, it steps forward through the token stream. It asks the
 scanner for the next token and stores it for later use. Before doing that, it
-takes the old current token and stashes that in another field. That will come in
-handy later so that we can get at the lexeme after we match a token.
+takes the old `current` token and stashes that in a `previous` field. That will
+come in handy later so that we can get at the lexeme after we match a token.
 
 The code to read the next token is wrapped in a loop. Remember, clox's scanner
-doesn't report lexical errors. Instead, it creates special "error tokens" and
+doesn't report lexical errors. Instead, it creates special *error tokens* and
 leaves it up to the parser to report them. We do that here.
 
 We keep looping, reading tokens and reporting the errors, until we hit a
-non-error one or reach the end. That way, the rest of the parser only sees
-"real" tokens. The current and previous token are stored in this struct:
+non-error one or reach the end. That way, the rest of the parser sees only valid
+tokens. The current and previous token are stored in this struct:
 
 ^code parser (1 before, 2 after)
 
@@ -208,16 +205,16 @@ The actual work happens here:
 First, we print where the error occurred. We try to show the lexeme if it's
 human-readable. Then we print the error message itself. After that, we set this
 `hadError` flag. That records whether any errors occurred during compilation.
-It also lives in the parser struct:
+This field also lives in the parser struct.
 
 ^code had-error-field (1 before, 1 after)
 
 Earlier I said that `compile()` should return `false` if an error occurred. Now
-we can make it do that:
+we can make it do that.
 
 ^code return-had-error (1 before, 1 after)
 
-I've got another flag for error handling to introduce. We want to avoid error
+I've got another flag to introduce for error handling. We want to avoid error
 cascades. If the user has a mistake in their code and the parser gets confused
 about where it is in the grammar, we don't want it to spew out a whole pile of
 meaningless knock-on errors after the first one.
@@ -226,7 +223,7 @@ We fixed that in jlox using panic mode error recovery. In the Java interpreter,
 we threw an exception to unwind out of all of the parser code to a point where
 we could skip tokens and resynchronize. We don't have <span
 name="setjmp">exceptions</span> in C. Instead, we'll do a little smoke and
-mirrors. We add a flag to track whether we're currently in panic mode:
+mirrors. We add a flag to track whether we're currently in panic mode.
 
 <aside name="setjmp">
 
@@ -238,31 +235,31 @@ Bad Day.
 
 ^code panic-mode-field (1 before, 1 after)
 
-When an error occurs, we set it:
+When an error occurs, we set it.
 
 ^code set-panic-mode (1 before, 1 after)
 
 After that, we go ahead and keep compiling as normal as if the error never
 occurred. The bytecode will never get executed, so it's harmless to keep on
 trucking. The trick is that while the panic mode flag is set, we simply suppress
-any other errors that get detected:
+any other errors that get detected.
 
 ^code check-panic-mode (1 before, 1 after)
 
 There's a good chance the parser will go off in the weeds, but the user won't
 know because the errors all get swallowed. Panic mode ends when the parser
 reaches a synchronization point. For Lox, we chose statement boundaries, so when
-we later add those to our compiler, we'll clear the flag.
+we later add those to our compiler, we'll clear the flag there.
 
-These new fields need to be initialized:
+These new fields need to be initialized.
 
 ^code init-parser-error (1 before, 1 after)
 
-And to display the errors, we need a standard header:
+And to display the errors, we need a standard header.
 
 ^code compiler-include-stdlib (1 before, 2 after)
 
-There's one last parsing function, another old friend from jlox:
+There's one last parsing function, another old friend from jlox.
 
 ^code consume
 
@@ -275,8 +272,8 @@ OK, that's enough on the front end for now.
 ## Emitting Bytecode
 
 After we parse and understand a piece of the user's program, the next step is to
-translate that to a series of bytecode instructions. It doesn't get more
-fundamental than appending a single byte to the chunk:
+translate that to a series of bytecode instructions. It starts with the easiest
+possible step: appending a single byte to the chunk.
 
 ^code emit-byte
 
@@ -290,16 +287,16 @@ its way to `emitByte()`. To do that, we rely on this intermediary function:
 
 ^code compiling-chunk (2 before, 1 after)
 
-Right now, the chunk pointer is stored in a module level variable like we store
+Right now, the chunk pointer is stored in a module-level variable like we store
 other global state. Later, when we start compiling user-defined functions, the
 notion of "current chunk" gets more complicated. To avoid having to go back and
-change a lot of code, I encapsulate that logic in this function.
+change a lot of code, I encapsulate that logic in the `currentChunk()` function.
 
 We initialize this new module variable before we write any bytecode:
 
 ^code init-compile-chunk (2 before, 2 after)
 
-Then, at the very end, when we're done compiling the chunk, we wrap things up:
+Then, at the very end, when we're done compiling the chunk, we wrap things up.
 
 ^code finish-compile (1 before, 1 after)
 
@@ -307,14 +304,14 @@ That calls this:
 
 ^code end-compiler
 
-In this chapter, our VM only deals with expressions. When you run clox, it
-parses, compiles, and executes a single expression, then prints the result. To
-print that value, we are temporarily using the `OP_RETURN` instruction. So we
-have the compiler add one of those to the end of the chunk:
+In this chapter, our VM deals only with expressions. When you run clox, it will
+parse, compile, and execute a single expression, then print the result. To print
+that value, we are temporarily using the `OP_RETURN` instruction. So we have the
+compiler add one of those to the end of the chunk.
 
 ^code emit-return
 
-While we're over here in the back end:
+While we're here in the back end we may as well make our lives easier.
 
 ^code emit-bytes
 
@@ -323,8 +320,8 @@ a one-byte operand that it's worth defining this convenience function.
 
 ## Parsing Prefix Expressions
 
-We've assembled our parsing and code generation functions. The missing piece is
-the code in the middle that connects those together.
+We've assembled our parsing and code generation utility functions. The missing
+piece is the code in the middle that connects those together.
 
 <img src="image/compiling-expressions/mystery.png" alt="Parsing functions on the left, bytecode emitting functions on the right. What goes in the middle?"/>
 
@@ -333,12 +330,12 @@ The only step in `compile()` that we have left to implement is this function:
 ^code expression
 
 We aren't ready to implement every kind of expression in Lox yet. Heck, we don't
-even have Booleans. For this chapter, we're only going to worry about:
+even have Booleans. For this chapter, we're only going to worry about four:
 
-* Number literals: `123`.
-* Parentheses for grouping: `(123)`.
-* Unary negation: `-123`.
-* The Four Horsemen of the Arithmetic: `+`, `-`, `*`, `/`.
+* Number literals: `123`
+* Parentheses for grouping: `(123)`
+* Unary negation: `-123`
+* The Four Horsemen of the Arithmetic: `+`, `-`, `*`, `/`
 
 As we work through the functions to compile each of those kinds of expressions,
 we'll also assemble the requirements for the table-driven parser that calls
@@ -346,15 +343,18 @@ them.
 
 ### Parsers for tokens
 
-Imagine that every expression in Lox is only a single token. Each token type
-maps to a different kind of expression. We define a function for each that
-outputs the appropriate bytecode for that expression. Then we build an array of
-function pointers. The indexes in the array correspond to the `TokenType` enum
-values, and the function at that index is the code to compile an expression of
-that token type.
+For now, let's focus on the Lox expressions that are each only a single token.
+In this chapter, that's just number literals, but there will be more later. Here's
+how we can compile them:
 
-To add support for number literals, we store a pointer to the following function
-at the `TOKEN_NUMBER` index in the array:
+We map each token type to a different kind of expression. We define a function
+for each expression that outputs the appropriate bytecode. Then we build an
+array of function pointers. The indexes in the array correspond to the
+`TokenType` enum values, and the function at each index is the code to compile
+an expression of that token type.
+
+To compile number literals, we store a pointer to the following function at the
+`TOKEN_NUMBER` index in the array.
 
 ^code number
 
@@ -375,7 +375,7 @@ Most of the work happens in `addConstant()`, which we defined back in an
 [earlier chapter][bytecode]. That adds the given value to the end of the chunk's
 constant table and returns its index. The new function's job is mostly to make
 sure we don't have too many constants. Since the `OP_CONSTANT` instruction uses
-a single byte for the index operand, we can only store and load up to <span
+a single byte for the index operand, we can store and load only up to <span
 name="256">256</span> constants in a chunk.
 
 [bytecode]: chunks-of-bytecode.html
@@ -384,17 +384,17 @@ name="256">256</span> constants in a chunk.
 
 Yes, that limit is pretty low. If this were a full-sized language
 implementation, we'd want to add another instruction like `OP_CONSTANT_16` that
-stores the index as a two-byte operand so we can handle more constants when
+stores the index as a two-byte operand so we could handle more constants when
 needed.
 
 The code to support that isn't particularly illuminating, so I omitted it from
-clox, but you'll want to scale to larger programs in your own VMs.
+clox, but you'll want your VMs to scale to larger programs.
 
 </aside>
 
 That's basically all it takes. Provided there is some suitable code that
-consumes a `TOKEN_NUMBER` token and then calls `number()`, we can now compile
-number literals to bytecode.
+consumes a `TOKEN_NUMBER` token, looks up `number()` in the function pointer
+array, and then calls it, we can now compile number literals to bytecode.
 
 ### Parentheses for grouping
 
@@ -422,15 +422,15 @@ That's to be expected since the grammar itself is recursive.
 </aside>
 
 As far as the back end is concerned, there's literally nothing to a grouping
-expression. Its sole function is syntactic -- it lets you insert a lower
-precedence expression where a higher precedence is expected. Thus, it has no
-runtime semantics on its own and therefore doesn't emit any bytecode. The inner
-call to `expression()` takes care of generating bytecode for the expression
-inside the parentheses.
+expression. Its sole function is syntactic -- it lets you insert a
+lower-precedence expression where a higher precedence is expected. Thus, it has
+no runtime semantics on its own and therefore doesn't emit any bytecode. The
+inner call to `expression()` takes care of generating bytecode for the
+expression inside the parentheses.
 
 ### Unary negation
 
-Unary minus is also a prefix expression, so it works with our model too:
+Unary minus is also a prefix expression, so it works with our model too.
 
 ^code unary
 
@@ -487,29 +487,29 @@ Consider:
 
 Here, the operand to `-` should be just the `a.b` expression, not the entire
 `a.b + c`. But if `unary()` calls `expression()`, the latter will happily chew
-through all of the remaining code including the `+`. It will erronously treat
+through all of the remaining code including the `+`. It will erroneously treat
 the `-` as lower precendence than the `+`.
 
 When parsing the operand to unary `-`, we need to compile only expressions at a
-certain precedence level or higher. In jlox's recursive descent parser we could
-accomplish that by calling into the parsing method for the lowest precendence
+certain precedence level or higher. In jlox's recursive descent parser we
+accomplished that by calling into the parsing method for the lowest-precendence
 expression we wanted to allow (in this case, `call()`). Each method for parsing
 a specific expression also parsed any expressions of higher precedence too, so
-that would include the rest of the precedence table.
+that included the rest of the precedence table.
 
-The parsing functions like `number()` and `unary()` here are different. Each
-only parses exactly one type of expression. They don't cascade to include higher
-precedence expression types too. We need a different solution, and it looks like
-this:
+The parsing functions like `number()` and `unary()` here in clox are different.
+Each only parses exactly one type of expression. They don't cascade to include
+higher-precedence expression types too. We need a different solution, and it
+looks like this:
 
 ^code parse-precedence
 
-This function, once we implement it, starts at the current token and parses any
-expression at the given precence level or higher. We have some other setup to
-get through before we can write the body of this function, but you can probably
-guess that it will use that table of parsing function pointers I've been talking
-about. For now, don't worry too much about how it works. In order to take the
-"precedence" as a parameter, we define it numerically:
+This function -- once we implement it -- starts at the current token and parses
+any expression at the given precedence level or higher. We have some other setup
+to get through before we can write the body of this function, but you can
+probably guess that it will use that table of parsing function pointers I've
+been talking about. For now, don't worry too much about how it works. In order
+to take the "precedence" as a parameter, we define it numerically.
 
 ^code precedence (1 before, 2 after)
 
@@ -525,17 +525,17 @@ compiler is sitting on a chunk of code like:
 If we call `parsePrecedence(PREC_ASSIGNMENT)`, then it will parse the entire
 expression because `+` has higher precedence than assignment. If instead we
 call `parsePrecedence(PREC_UNARY)`, it will compile the `-a.b` and stop there.
-It doesn't keep going through the `+` because the addition is lower precedence
+It doesn't keep going through the `+` because the addition has lower precedence
 than unary operators.
 
 With this function in hand, it's a snap to fill in the missing body for
-`expression()`:
+`expression()`.
 
 ^code expression-body (1 before, 1 after)
 
-We simply parse the lowest precedence level, which subsumes all of the higher
-precedence expressions too. Now, to compile the operand for a unary expression,
-we call this new function and limit it to the appropriate level:
+We simply parse the lowest precedence level, which subsumes all of the
+higher-precedence expressions too. Now, to compile the operand for a unary
+expression, we call this new function and limit it to the appropriate level:
 
 ^code unary-operand (1 before, 2 after)
 
@@ -595,17 +595,18 @@ The function we will use as the infix parser for `TOKEN_PLUS`, `TOKEN_MINUS`,
 ^code binary
 
 When a prefix parser function is called, the leading token has already been
-consumed. An infix parser function is even more *in medias res* -- the left-hand
-operand has already been compiled and the subsequent infix operator consumed.
+consumed. An infix parser function is even more *in medias res* -- the entire
+left-hand operand expression has already been compiled and the subsequent infix
+operator consumed.
 
 The fact that the left operand gets compiled first works out fine. It means at
 runtime, that code gets executed first. When it runs, the value it produces will
 end up on the stack. That's right where the infix operator is going to need it.
 
-Then we come here to `binary()` to handle the rest of the arithmetic operator.
-It compiles the right operand, much like how `unary()` compiles its own trailing
-operand. Finally, it emits the bytecode instruction that performs the binary
-operation.
+Then we come here to `binary()` to handle the rest of the arithmetic operators.
+This function compiles the right operand, much like how `unary()` compiles its
+own trailing operand. Finally, it emits the bytecode instruction that performs
+the binary operation.
 
 When run, the VM will execute the left and right operand code, in that order,
 leaving their values on the stack. Then it executes the instruction for the
@@ -646,8 +647,8 @@ We want to parse it like:
 ```
 
 Thus, when parsing the right-hand operand to the first `+`, we want to consume
-the `2`, but not the rest, so we use one level above `+`&rsquo;s precedence. But
-if our operator was *right*-associative, this would be wrong. Given:
+the `2`, but not the rest, so we use one level above `+`'s precedence. But if
+our operator was *right*-associative, this would be wrong. Given:
 
 ```lox
 a = b = c = d
@@ -664,23 +665,23 @@ the current operator.
 
 </aside>
 
-This way, we can use a single `binary()` function for all binary arithmetic
-operators even though they have different precedences.
+This way, we can use a single `binary()` function for all binary operators even
+though they have different precedences.
 
 ## A Pratt Parser
 
 We now have all of the pieces and parts of the compiler laid out. We have a
 function for each grammar production: `number()`, `grouping()`, `unary()`, and
 `binary()`. We still need to implement `parsePrecedence()`, and `getRule()`. We
-also know we need some table that, given a token type, lets us find:
+also know we need a table that, given a token type, lets us find
 
-*   The function to compile a prefix expression starting with a token of that
-    type.
+*   the function to compile a prefix expression starting with a token of that
+    type,
 
-*   The function to compile an infix expression whose left operand is followed
-    by a token of that type.
+*   the function to compile an infix expression whose left operand is followed
+    by a token of that type, and
 
-*   The precedence of an <span name="prefix">infix</span> expression that uses
+*   the precedence of an <span name="prefix">infix</span> expression that uses
     that token as an operator.
 
 <aside name="prefix">
@@ -691,14 +692,14 @@ given token because all prefix operators in Lox have the same precedence.
 </aside>
 
 We wrap these three properties in a little struct which represents a single row
-in the parser table:
+in the parser table.
 
 ^code parse-rule (1 before, 2 after)
 
 That ParseFn type is a simple <span name="typedef">typedef</span> for a function
-type that takes no arguments and returns nothing:
+type that takes no arguments and returns nothing.
 
-<aside name="typedef">
+<aside name="typedef" class="bottom">
 
 C's syntax for function pointer types is so bad that I always hide it behind a
 typedef. I understand the intent behind the syntax -- the whole "declaration
@@ -709,7 +710,7 @@ reflects use" thing -- but I think it was a failed syntactic experiment.
 ^code parse-fn-type (1 before, 2 after)
 
 The table that drives our whole parser is an array of ParseRules. We've been
-talking about it forever, and finally you get to see it:
+talking about it forever, and finally you get to see it.
 
 ^code rules
 
@@ -718,12 +719,21 @@ talking about it forever, and finally you get to see it:
 See what I mean about not wanting to revisit the table each time we needed a new
 column? It's a beast.
 
+If you haven't seen the `[TOKEN_DOT] = ` syntax in a C array literal, that is
+C99's designated initializer syntax. It's clearer than having to count array
+indexes by hand.
+
 </aside>
 
-There are a lot of `NULL` and `PREC_NONE` values in here. Most of those are
-because there is no expression associated with those tokens. You can't start an
-expression with, say, `else`, and `}` would make for a pretty confusing infix
-operator.
+You can see how `grouping` and `unary` are slotted into the prefix parser column
+for their respective token types. In the next column, `binary` is wired up to
+the four arithmetic infix operators. Those infix operators also have their
+precedences set in the last column.
+
+Aside from those, the rest of the table is full of `NULL` and `PREC_NONE`. Most
+of those empty cells are because there is no expression associated with those
+tokens. You can't start an expression with, say, `else`, and `}` would make for
+a pretty confusing infix operator.
 
 But, also, we haven't filled in the entire grammar yet. In later chapters, as we
 add new expression types, some of these slots will get functions in them. One of
@@ -732,7 +742,7 @@ to see which tokens are in use by the grammar and which are available.
 
 Now that we have the table, we are finally ready to write the code that uses it.
 This is where our Pratt parser comes to life. The easiest function to define is
-`getRule()`:
+`getRule()`.
 
 ^code get-rule
 
@@ -746,7 +756,7 @@ Instead, we wrap the lookup in a function. That lets us forward declare
 `getRule()` before the definition of `binary()`, and <span
 name="forward">then</span> *define* `getRule()` after the table. We'll need a
 couple of other forward declarations to handle the fact that our grammar is
-recursive, so let's get them all out of the way:
+recursive, so let's get them all out of the way.
 
 <aside name="forward">
 
@@ -765,19 +775,19 @@ worry, though, if you get it wrong, the C compiler will be happy to tell you.
 
 Now we're getting to the fun stuff. The maestro that orchestrates all of the
 parsing functions we've defined is `parsePrecedence()`. Let's start with parsing
-prefix expressions:
+prefix expressions.
 
 ^code precedence-body (1 before, 1 after)
 
-It reads the next token and looks up the corresponding ParseRule. If there is no
-prefix parser then the token must be a syntax error. We report that and return
+We read the next token and look up the corresponding ParseRule. If there is no
+prefix parser, then the token must be a syntax error. We report that and return
 to the caller.
 
 Otherwise, we call that prefix parse function and let it do its thing. That
-prefix parser compiles the rest of the prefix expression, consumes any other
+prefix parser compiles the rest of the prefix expression, consuming any other
 tokens it needs, and returns back here. Infix expressions are where it gets
-challenging, since precedence comes into play. The implementation is remarkably
-simple:
+interesting since precedence comes into play. The implementation is remarkably
+simple.
 
 ^code infix (1 before, 1 after)
 
@@ -786,7 +796,7 @@ beginning of `parsePrecedence()`, we look up a prefix parser for the current
 token. The first token is *always* going to belong to some kind of prefix
 expression, by definition. It may turn out to be nested as an operand inside one
 or more infix expressions, but as you read the code from left to right, the
-first thing you hit is always some prefix expression.
+first token you hit always belongs to a prefix expression.
 
 After parsing that, which may consume more tokens, the prefix expression is
 done. Now we look for an infix parser for the next token. If we find one, it
@@ -800,12 +810,9 @@ operator and hand off control to the infix parser we found. It consumes whatever
 other tokens it needs (usually the right operand) and returns back to
 `parsePrecedence()`. Then we loop back around and see if the *next* token is
 also a valid infix operator that can take the entire preceding expression as its
-operand.
-
-We keep looping like that, crunching through infix operators and their operands
-until we hit a token that isn't an infix operator or is too low precedence. This
-function is fairly short, but kind of tricky since each of those prefix and
-infix parsers often calls back into `parsePrecedence()` for its operands.
+operand. We keep looping like that, crunching through infix operators and their
+operands until we hit a token that isn't an infix operator or is too low
+precedence and stop.
 
 That's a lot of prose, but if you really want to mind meld with Vaughan Pratt
 and fully understand the algorithm, step through the parser in your debugger as
@@ -825,7 +832,7 @@ table's pointers to the parsing functions.
 
 </aside>
 
-We'll need to tweak the code in this chapter later to handle assignment. But,
+Later, we'll need to tweak the code in this chapter to handle assignment. But,
 otherwise, what we wrote covers all of our expression compiling needs for the
 rest of the book. We'll plug additional parsing functions into the table when we
 add new kinds of expressions, but `parsePrecedence()` is complete.
@@ -838,27 +845,27 @@ dumping the chunk once the compiler finishes. We had some temporary logging
 earlier when we hand-authored the chunk. Now we'll put in some real code so that
 we can enable it whenever we want.
 
-Since this isn't for end users, we hide it behind a flag:
+Since this isn't for end users, we hide it behind a flag.
 
 ^code define-debug-print-code (2 before, 1 after)
 
 When that flag is defined, we use our existing "debug" module to print out the
-chunk's bytecode:
+chunk's bytecode.
 
 ^code dump-chunk (1 before, 1 after)
 
-We only do this if the code was free of errors. After a syntax error, the
+We do this only if the code was free of errors. After a syntax error, the
 compiler keeps on going but it's in kind of a weird state and might produce
 broken code. That's harmless because it won't get executed, but we'll just
 confuse ourselves if we try to read it.
 
-Finally, to access `disassembleChunk()`, we need to include its header:
+Finally, to access `disassembleChunk()`, we need to include its header.
 
 ^code include-debug (1 before, 2 after)
 
 We made it! This was the last major section to install in our VM's compilation
 and execution pipeline. Our interpreter doesn't *look* like much, but inside it
-is scanning, parsing, compiling to bytecode, and executing it.
+is scanning, parsing, compiling to bytecode, and executing.
 
 Fire up the VM and type in an expression. If we did everything right, it should
 calculate and print the result. We now have a very over-engineered arithmetic
@@ -873,8 +880,9 @@ but the foundation is in place.
     through the interesting parsing functions -- `parsePrecedence()` and the
     parser functions stored in the table. Take this (strange) expression:
 
-        :::lox
-        (-1 + 2) * 3 - -4
+    ```lox
+    (-1 + 2) * 3 - -4
+    ```
 
     Write a trace of how those functions are called. Show the order they are
     called, which calls which, and the arguments passed to them.
@@ -884,11 +892,11 @@ but the foundation is in place.
     an infix one (subtraction).
 
     In the full Lox language, what other tokens can be used in both prefix and
-    infix positions? What about in C or another language of your choice?
+    infix positions? What about in C or in another language of your choice?
 
-3.  You might be wondering about more complex "mixfix" expressions that have
-    more than two operands separated by tokens. C's conditional or "ternary"
-    operator, `? :` is a widely-known one.
+3.  You might be wondering about complex "mixfix" expressions that have more
+    than two operands separated by tokens. C's conditional or "ternary"
+    operator, `?:`, is a widely known one.
 
     Add support for that operator to the compiler. You don't have to generate
     any bytecode, just show how you would hook it up to the parser and handle
@@ -902,14 +910,14 @@ but the foundation is in place.
 
 I'm going to make a claim here that will be unpopular with some compiler and
 language people. It's OK if you don't agree. Personally, I learn more from
-strongly-stated opinions that I disagree with than I do from several pages of
-qualifiers and equivocation. My claim is that *parsing doesn't matter.*
+strongly stated opinions that I disagree with than I do from several pages of
+qualifiers and equivocation. My claim is that *parsing doesn't matter*.
 
 Over the years, many programming language people, especially in academia, have
 gotten *really* into parsers and taken them very seriously. Initially, it was
 the compiler folks who got into <span name="yacc">compiler-compilers</span>,
-LALR and other stuff like that. The first half of the Dragon book is a long love
-letter to the wonders of parser generators.
+LALR, and other stuff like that. The first half of the Dragon book is a long
+love letter to the wonders of parser generators.
 
 <aside name="yacc">
 
@@ -927,7 +935,7 @@ For the record, I don't claim immunity to this affliction.
 </aside>
 
 Later, the functional programming folks got into parser combinators, packrat
-parsers and other sorts of things. Because, obviously, if you give a functional
+parsers, and other sorts of things. Because, obviously, if you give a functional
 programmer a problem, the first thing they'll do is whip out a pocketful of
 higher-order functions.
 
@@ -945,14 +953,14 @@ rewarding.
 But if your goal is just to implement a language and get it in front of users,
 almost all of that stuff doesn't matter. It's really easy to get worked up by
 the enthusiasm of the people who *are* into it and think that your front end
-*needs* some whiz-bang generated combinator parser factory thing. I've seen
+*needs* some whiz-bang generated combinator-parser-factory thing. I've seen
 people burn tons of time writing and rewriting their parser using whatever
 today's hot library or technique is.
 
 That's time that doesn't add any value to your user's life. If you're just
 trying to get your parser done, pick one of the bog-standard techniques, use it,
-and move on. Recursive descent, Pratt parsing, and one of the popular parser
-generators like ANTLR or Bison are all fine.
+and move on. Recursive descent, Pratt parsing, and the popular parser generators
+like ANTLR or Bison are all fine.
 
 Take the extra time you saved not rewriting your parsing code and spend it
 improving the compile error messages your compiler shows users. Good error

@@ -113,7 +113,7 @@ Another is:
 2. For the left-hand `expression`, pick `binary` again.
 3. In that nested `binary` expression, pick `6 / 3`.
 4. Back at the outer `binary`, for the operator, pick `"-"`.
-4. For the right-hand `expression`, pick `NUMBER`, and use `1`.
+5. For the right-hand `expression`, pick `NUMBER`, and use `1`.
 
 Those produce the same *strings*, but not the same *syntax trees*:
 
@@ -407,7 +407,7 @@ Confusingly, we also use direction metaphorically when talking about "high" and
 reach the lowest-precedence expressions first because they may in turn contain
 subexpressions of higher precedence.
 
-<img src="image/parsing-expressions/direction.png" alt="Top-down grammar rules in order of increasing precedence.">
+<img src="image/parsing-expressions/direction.png" alt="Top-down grammar rules in order of increasing precedence." />
 
 CS people really need to get together and straighten out their metaphors. Don't
 even get me started on which direction a stack grows or why trees have their
@@ -589,7 +589,7 @@ The code for this is a little different.
 
 ^code unary
 
-Again, we look at the <span name="current">current<span> token to see how to
+Again, we look at the <span name="current">current</span> token to see how to
 parse. If it's a `!` or `-`, we must have a unary expression. In that case, we
 grab the token and then recursively call `unary()` again to parse the operand.
 Wrap that all up in a unary expression syntax tree and we're done.
@@ -708,7 +708,7 @@ issue. Simple, fast error recovery is fine.
 
 You know you want to push it.
 
-<img src="image/parsing-expressions/panic.png" alt="A big shiny 'PANIC' button.">
+<img src="image/parsing-expressions/panic.png" alt="A big shiny 'PANIC' button." />
 
 </aside>
 
@@ -740,14 +740,15 @@ we'll get the machinery in place for later.
 ### Entering panic mode
 
 Back before we went on this side trip around error recovery, we were writing the
-code to parse a parenthesized expression. After parsing the expression, it
-looks for the closing `)` by calling `consume()`. Here, finally, is that method:
+code to parse a parenthesized expression. After parsing the expression, the
+parser looks for the closing `)` by calling `consume()`. Here, finally, is that
+method:
 
 ^code consume
 
 It's similar to `match()` in that it checks to see if the next token is of the
-expected type. If so, it consumes it and everything is groovy. If some other
-token is there, then we've hit an error. We report it by calling this:
+expected type. If so, it consumes the token and everything is groovy. If some
+other token is there, then we've hit an error. We report it by calling this:
 
 ^code error
 
@@ -789,8 +790,8 @@ not. Instead of getting confused when the parser stumbles onto a `+` at the
 beginning of an expression, we could extend the unary rule to allow it.
 
 ```ebnf
-unary          → ( "!" | "-" | "+" ) unary
-               | primary ;
+unary → ( "!" | "-" | "+" ) unary
+      | primary ;
 ```
 
 This lets the parser consume `+` without going into panic mode or leaving the
@@ -884,7 +885,7 @@ out. We still don't have an interpreter, so for now, we'll parse to a syntax
 tree and then use the AstPrinter class from the [last chapter][ast-printer] to
 display it.
 
-[ast-printer]: representing-code.html#a-(not-very)-pretty-printer
+[ast-printer]: representing-code.html#a-not-very-pretty-printer
 
 Delete the old code to print the scanned tokens and replace it with this:
 

@@ -44,7 +44,7 @@ For exit codes, I'm using the conventions defined in the UNIX
 ["sysexits.h"][sysexits] header. It's the closest thing to a standard I could
 find.
 
-[sysexits]: https://www.freebsd.org/cgi/man.cgi?query=sysexits&apropos=0&sektion=0&manpath=FreeBSD+4.3-RELEASE&format=html
+[sysexits]: https://www.freebsd.org/cgi/man.cgi?query=sysexits&amp;apropos=0&amp;sektion=0&amp;manpath=FreeBSD+4.3-RELEASE&amp;format=html
 
 </aside>
 
@@ -275,10 +275,10 @@ phases of the interpreter.
 ## Regular Languages and Expressions
 
 Now that we know what we're trying to produce, let's, well, produce it. The core
-of the scanner is a loop. Starting at the first character of the source code, it
-figures out what lexeme it belongs to, and consumes it and any following
-characters that are part of that lexeme. When it reaches the end of that lexeme,
-it emits a token.
+of the scanner is a loop. Starting at the first character of the source code,
+the scanner figures out what lexeme the character belongs to, and consumes it
+and any following characters that are part of that lexeme. When it reaches the
+end of that lexeme, it emits a token.
 
 Then it loops back and does it again, starting from the very next character in
 the source code. It keeps doing that, eating characters and occasionally, uh,
@@ -319,7 +319,7 @@ It pains me to gloss over the theory so much, especially when it's as
 interesting as I think the [Chomsky hierarchy][] and [finite-state machines][]
 are. But the honest truth is other books cover this better than I could.
 [*Compilers: Principles, Techniques, and Tools*][dragon] (universally known as
-"the Dragon Book") is the canonical reference.
+"the dragon book") is the canonical reference.
 
 [chomsky hierarchy]: https://en.wikipedia.org/wiki/Chomsky_hierarchy
 [dragon]: https://en.wikipedia.org/wiki/Compilers:_Principles,_Techniques,_and_Tools
@@ -664,7 +664,7 @@ multiple-character operators like `<=`.
 
 ```java
 case 'o':
-  if (match() == 'r') {
+  if (match('r')) {
     addToken(OR);
   }
   break;
@@ -839,7 +839,7 @@ separators. Here are a couple:
 
 *   [Go][] handles newlines in the scanner. If a newline appears following one
     of a handful of token types that are known to potentially end a statement,
-    the newline is treated like a semicolon, otherwise it is ignored. The Go
+    the newline is treated like a semicolon. Otherwise it is ignored. The Go
     team provides a canonical code formatter, [gofmt][], and the ecosystem is
     fervent about its use, which ensures that idiomatic styled code works well
     with this simple rule.

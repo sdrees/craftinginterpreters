@@ -25,10 +25,10 @@ other named entities.
 <aside name="expr">
 
 You could make a language that treats variable declarations as expressions that
-both create a binding and produce a value, but I'm not aware of any widely used
-languages that do that. Scheme seems like a contender, but note that after a
-`let` expression is evaluated, the variable it bound is forgotten. The `define`
-syntax is not an expression.
+both create a binding and produce a value. The only language I know that does
+that is Tcl. Scheme seems like a contender, but note that after a `let`
+expression is evaluated, the variable it bound is forgotten. The `define` syntax
+is not an expression.
 
 </aside>
 
@@ -353,7 +353,7 @@ the "higher" precedence statements that don't declare names.
 
 <aside name="brace">
 
-In this analogy, blocks statement work sort of like parentheses do for
+In this analogy, block statements work sort of like parentheses do for
 expressions. A block is itself in the "higher" precedence level and can be used
 anywhere, like in the clauses of an `if` statement. But the statements it
 *contains* can be lower precedence. You're allowed to declare variables and
@@ -405,7 +405,7 @@ That `IDENTIFIER` clause matches a single identifier token, which is understood
 to be the name of the variable being accessed.
 
 These new grammar rules get their corresponding syntax trees. Over in the AST
-generator, we add a <span name="var-stmt-ast">new statement</span> tree for a
+generator, we add a <span name="var-stmt-ast">new statement</span> node for a
 variable declaration.
 
 ^code var-stmt-ast (1 before, 1 after)
@@ -454,7 +454,7 @@ infrastructure in place to do error recovery? We are finally ready to hook that
 up.
 
 [parsing]: parsing-expressions.html
-[error recovery]: http://localhost:8000/parsing-expressions.html#panic-mode-error-recovery
+[error recovery]: parsing-expressions.html#panic-mode-error-recovery
 
 This `declaration()` method is the method we call repeatedly when parsing a
 series of statements in a block or a script, so it's the right place to
@@ -578,7 +578,7 @@ Scheme allows redefining variables at the top level.
 So, to keep the two modes consistent, we'll allow it -- at least for global
 variables. Once a variable exists, we need a way to look it up.
 
-^code environment-get (3 before, 1 after)
+^code environment-get (2 before, 1 after)
 
 This is a little more semantically interesting. If the variable is found, it
 simply returns the value bound to it. But what if it's not? Again, we have a
@@ -667,7 +667,7 @@ tell the user where in their code they messed up.
 
 The Interpreter class gets an instance of the new Environment class.
 
-^code environment-field (1 before, 1 after)
+^code environment-field (2 before, 1 after)
 
 We store it as a field directly in Interpreter so that the variables stay in
 memory as long as the interpreter is still running.
@@ -1052,7 +1052,7 @@ Scope and environments are close cousins. The former is the theoretical concept,
 and the latter is the machinery that implements it. As our interpreter works its
 way through code, syntax tree nodes that affect scope will change the
 environment. In a C-ish syntax like Lox's, scope is controlled by curly-braced
-<span name="block">blocks</span>. (That's why we call it **block scope**.)
+blocks. (That's why we call it **block scope**.)
 
 ```lox
 {
@@ -1146,7 +1146,7 @@ much prefer the evocative **cactus stack**.
 
 [parent pointer]: https://en.wikipedia.org/wiki/Parent_pointer_tree
 
-<img class="above" src="image/statements-and-state/cactus.png" alt="Each branch points to its parent. The root is global scope.">
+<img class="above" src="image/statements-and-state/cactus.png" alt="Each branch points to its parent. The root is global scope." />
 
 </aside>
 

@@ -29,7 +29,7 @@ closer, details emerge and I gain a more nuanced perspective.
 
 </aside>
 
-### OOP and classes
+## OOP and Classes
 
 There are three broad paths to object-oriented programming: classes,
 [prototypes][], and <span name="multimethods">[multimethods][]</span>. Classes
@@ -49,13 +49,13 @@ Multimethods are the approach you're least likely to be familiar with. I'd love
 to talk more about them -- I designed [a hobby language][magpie] around them
 once and they are *super rad* -- but there are only so many pages I can fit in.
 If you'd like to learn more, take a look at [CLOS][] (the object system in
-Common Lisp), [Dylan][], [Julia][], or [Perl 6][].
+Common Lisp), [Dylan][], [Julia][], or [Raku][].
 
 [clos]: https://en.wikipedia.org/wiki/Common_Lisp_Object_System
 [magpie]: http://magpie-lang.org/
 [dylan]: https://opendylan.org/
 [julia]: https://julialang.org/
-[perl 6]: https://docs.perl6.org/language/functions#Multi-dispatch
+[raku]: https://docs.raku.org/language/functions#Multi-dispatch
 
 </aside>
 
@@ -82,7 +82,7 @@ together until we have all of the above pieces, so gather your stamina.
 
 <aside name="circle">
 
-<img src="image/classes/circle.png" alt="The relationships between classes, methods, instances, constructors, and fields.">
+<img src="image/classes/circle.png" alt="The relationships between classes, methods, instances, constructors, and fields." />
 
 It's like the circle of life, *sans* Sir Elton John.
 

@@ -430,7 +430,7 @@ This implementation style is common for student projects and little languages,
 but is not widely used for <span name="ruby">general-purpose</span> languages
 since it tends to be slow. Some people use "interpreter" to mean only these
 kinds of implementations, but others define that word more generally, so I'll
-use the inarguably explicit **"tree-walk interpreter"** to refer to these. Our
+use the inarguably explicit **tree-walk interpreter** to refer to these. Our
 first interpreter rolls this way.
 
 <aside name="ruby">
@@ -531,9 +531,9 @@ You can do the same thing that the HotSpot Java Virtual Machine (JVM),
 Microsoft's Common Language Runtime (CLR), and most JavaScript interpreters do.
 On the end user's machine, when the program is loaded -- either from source in
 the case of JS, or platform-independent bytecode for the JVM and CLR -- you
-compile it to native for the architecture their computer supports. Naturally
-enough, this is called **just-in-time compilation**. Most hackers just say
-"JIT", pronounced like it rhymes with "fit".
+compile it to native code for the architecture their computer supports.
+Naturally enough, this is called **just-in-time compilation**. Most hackers just
+say "JIT", pronounced like it rhymes with "fit".
 
 The most sophisticated JITs insert profiling hooks into the generated code to
 see which regions are most performance critical and what kind of data is flowing
@@ -559,7 +559,7 @@ the other. There are fruits that aren't vegetables (apples) and vegetables that
 aren't fruits (carrots), but also edible plants that are both fruits *and*
 vegetables, like tomatoes.
 
-<span name="veg"></span></span>
+<span name="veg"></span>
 
 <img src="image/a-map-of-the-territory/plants.png" alt="A Venn diagram of edible plants" />
 

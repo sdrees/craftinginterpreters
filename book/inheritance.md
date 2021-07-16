@@ -66,7 +66,7 @@ instances contains the set of all BostonCream instances since every BostonCream
 is also a Doughnut. So BostonCream is a subclass, and a subtype, and its
 instances are a subset. It all lines up.
 
-<img src="image/inheritance/doughnuts.png" alt="Boston cream <: doughnut.">
+<img src="image/inheritance/doughnuts.png" alt="Boston cream &lt;: doughnut." />
 
 </aside>
 
@@ -130,11 +130,11 @@ those is the resolver.
 ^code resolve-superclass (1 before, 2 after)
 
 The class declaration AST node has a new subexpression, so we traverse into and
-<span name="self">resolve</span> that. Since classes are usually declared at the
-top level, the superclass name will most likely be a global variable, so this
-doesn't usually do anything useful. However, Lox allows class declarations even
-inside blocks, so it's possible the superclass name refers to a local variable.
-In that case, we need to make sure it's resolved.
+resolve that. Since classes are usually declared at the top level, the
+superclass name will most likely be a global variable, so this doesn't usually
+do anything useful. However, Lox allows class declarations even inside blocks,
+so it's possible the superclass name refers to a local variable. In that case,
+we need to make sure it's resolved.
 
 Because even well-intentioned programmers sometimes write weird code, there's a
 silly edge case we need to worry about while we're in here. Take a look at this:
@@ -614,7 +614,7 @@ implemented...
 
 <aside name="superhero">
 
-<img src="image/inheritance/superhero.png" alt="You, being your bad self.">
+<img src="image/inheritance/superhero.png" alt="You, being your bad self." />
 
 </aside>
 

@@ -55,7 +55,7 @@ with the simplest, classic solution: a **tagged union**. A value contains two
 parts: a type "tag", and a payload for the actual value. To store the value's
 type, we define an enum for each kind of value the VM supports.
 
-^code value-type (2 before, 2 after)
+^code value-type (2 before, 1 after)
 
 <aside name="user-types">
 
@@ -205,7 +205,7 @@ data between Lox's dynamic world and C's static one.
 
 <aside name="universe">
 
-<img src="image/types-of-values/universe.png" alt="The earthly C firmament with the Lox heavens above.">
+<img src="image/types-of-values/universe.png" alt="The earthly C firmament with the Lox heavens above." />
 
 The `_VAL` macros lift a C value into the heavens. The `AS_` macros bring it
 back down.
@@ -356,7 +356,7 @@ place.
 
 [few chapters ago]: a-virtual-machine.html#binary-operators
 
-^code binary-op (2 before, 2 after)
+^code binary-op (1 before, 2 after)
 
 Yeah, I realize that's a monster of a macro. It's not what I'd normally consider
 good C practice, but let's roll with it. The changes are similar to what we did
@@ -499,7 +499,7 @@ Because I knew we were going to do this, the `unary()` function already has a
 switch on the token type to figure out which bytecode instruction to output. We
 merely add another case.
 
-^code compile-not (1 before, 4 after)
+^code compile-not (1 before, 3 after)
 
 That's it for the front end. Let's head over to the VM and conjure this
 instruction into life.
@@ -653,7 +653,7 @@ Anyway, as we add more types to clox, this function will grow new cases. For
 now, these three are sufficient. The other comparison operators are easier since
 they work only on numbers.
 
-^code interpret-comparison (4 before, 1 after)
+^code interpret-comparison (3 before, 1 after)
 
 We already extended the `BINARY_OP` macro to handle operators that return
 non-numeric types. Now we get to use that. We pass in `BOOL_VAL` since the

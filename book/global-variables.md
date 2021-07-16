@@ -289,7 +289,7 @@ and then emits an `OP_POP` instruction.
 As the name implies, that instruction pops the top value off the stack and
 forgets it.
 
-^code interpret-pop (1 before, 2 after)
+^code interpret-pop (1 before, 1 after)
 
 We can disassemble it too.
 
@@ -434,7 +434,7 @@ Over in the runtime, we begin with this new instruction:
 
 Thanks to our handy-dandy hash table, the implementation isn't too hard.
 
-^code interpret-define-global (1 before, 2 after)
+^code interpret-define-global (1 before, 1 after)
 
 We get the name of the variable from the constant table. Then we <span
 name="pop">take</span> the value from the top of the stack and store it in a
@@ -456,7 +456,7 @@ value if the key happens to already be in the hash table.
 
 There's another little helper macro:
 
-^code read-string (1 before, 2 after)
+^code read-string (1 before, 1 after)
 
 It reads a one-byte operand from the bytecode chunk. It treats that as an index
 into the chunk's constant table and returns the string at that index. It doesn't
@@ -523,7 +523,7 @@ variable with that name. Here's the instruction:
 
 Over in the interpreter, the implementation mirrors `OP_DEFINE_GLOBAL`.
 
-^code interpret-get-global (1 before, 2 after)
+^code interpret-get-global (1 before, 1 after)
 
 We pull the constant table index from the instruction's operand and get the
 variable name. Then we use that as a key to look up the variable's value in the
@@ -609,7 +609,7 @@ That's the last instruction we need to add in this chapter.
 
 As you'd expect, its runtime behavior is similar to defining a new variable.
 
-^code interpret-set-global (1 before, 2 after)
+^code interpret-set-global (1 before, 1 after)
 
 The main difference is what happens when the key doesn't already exist in the
 globals hash table. If the variable hasn't been defined yet, it's a runtime
@@ -633,7 +633,7 @@ there in case the assignment is nested inside some larger expression.
 
 Add a dash of disassembly:
 
-^code disassemble-set-global (1 before, 1 after)
+^code disassemble-set-global (2 before, 1 after)
 
 So we're done, right? Well... not quite. We've made a mistake! Take a gander at:
 
@@ -714,7 +714,7 @@ Then `parsePrecedence()` silently returns back to the caller. That also isn't
 right. If the `=` doesn't get consumed as part of the expression, nothing else
 is going to consume it. It's an error and we should report it.
 
-^code invalid-assign (5 before, 1 after)
+^code invalid-assign (2 before, 1 after)
 
 With that, the previous bad program correctly gets an error at compile time. OK,
 *now* are we done? Still not quite. See, we're passing an argument to one of the

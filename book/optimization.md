@@ -155,8 +155,7 @@ my own through trial and error. Profilers are wonderful, magical tools.
 
 Enough pontificating, let's get some performance charts going up and to the
 right. The first optimization we'll do, it turns out, is about the *tiniest*
-possible change we could make to our VM. There's a lot of scaffolding around the
-change we'll have to deal with, but the main optimization itself is pint-sized.
+possible change we could make to our VM.
 
 When I first got the bytecode virtual machine that clox is descended from
 working, I did what any self-respecting VM hacker would do. I cobbled together a
@@ -267,10 +266,9 @@ static Entry* findEntry(Entry* entries, int capacity,
                         ObjString* key) {
   uint32_t index = key->hash % capacity;
   Entry* tombstone = NULL;
-  
+
   for (;;) {
     Entry* entry = &entries[index];
-
     if (entry->key == NULL) {
       if (IS_NIL(entry->value)) {
         // Empty entry.
@@ -326,7 +324,7 @@ remainder of a number modulo a power of two: **bit masking**. Let's say we want
 to calculate 229 modulo 64. The answer is 37, which is not particularly apparent
 in decimal, but is clearer when you view those numbers in binary:
 
-<img src="image/optimization/mask.png" alt="The bit patterns resulting from 229 % 64 = 37 and 229 & 63 = 37." />
+<img src="image/optimization/mask.png" alt="The bit patterns resulting from 229 % 64 = 37 and 229 &amp; 63 = 37." />
 
 On the left side of the illustration, notice how the result (37) is simply the
 dividend (229) with the highest two bits shaved off? Those two highest bits are
@@ -371,7 +369,7 @@ optimizations there too. This function is called only when interning strings,
 which wasn't heavily stressed by our benchmark. But a Lox program that created
 lots of strings might noticeably benefit from this change.
 
-^code find-string-index (4 before, 2 after)
+^code find-string-index (2 before, 2 after)
 
 And also when the linear probing wraps around.
 
@@ -486,7 +484,7 @@ Dynamic language folks hate losing ground to the static camp, so they've come up
 with a number of very clever ways to pack type information and a payload into a
 small number of bits. NaN boxing is one of those. It's a particularly good fit
 for languages like JavaScript and Lua, where all numbers are double-precision
-floating point. Lox is in that same camp.
+floating point. Lox is in that same boat.
 
 ### What is (and is not) a number?
 
@@ -697,10 +695,9 @@ I know, weird, right? The way to treat a series of bytes as having a different
 type without changing their value at all is `memcpy()`? This looks horrendously
 slow: Create a local variable. Pass its address to the operating system through
 a syscall to copy a few bytes. Then return the result, which is the exact same
-bytes as the input.
-
-Fortunately, because this *is* the supported idiom for type punning, most
-compilers recognize the pattern and optimize away the `memcpy()` entirely.
+bytes as the input. Thankfully, because this *is* the supported idiom for type
+punning, most compilers recognize the pattern and optimize away the `memcpy()`
+entirely.
 
 "Unwrapping" a Lox number is the mirror image.
 
@@ -883,7 +880,7 @@ the three lowest bits of an Obj pointer will always be zero. We could store
 whatever we wanted in there and just mask it off before dereferencing the
 pointer.
 
-This is another value representation optimization called "pointer tagging".
+This is another value representation optimization called **pointer tagging**.
 
 </aside>
 

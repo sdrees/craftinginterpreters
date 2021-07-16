@@ -122,19 +122,19 @@ Oof. Maybe a table will help:
 </thead>
 <tbody>
 <tr>
-  <td>The &ldquo;alphabet&rdquo; is<span class="ellipse">&thinsp;.&thinsp;.&thinsp;.&nbsp;</span></td>
+  <td>The &ldquo;alphabet&rdquo; is<span class="ellipse">&thinsp;.&thinsp;.&thinsp;.</span></td>
   <td>&rarr;&ensp;</td>
   <td>Characters</td>
   <td>Tokens</td>
 </tr>
 <tr>
-  <td>A &ldquo;string&rdquo; is<span class="ellipse">&thinsp;.&thinsp;.&thinsp;.&nbsp;</span></td>
+  <td>A &ldquo;string&rdquo; is<span class="ellipse">&thinsp;.&thinsp;.&thinsp;.</span></td>
   <td>&rarr;&ensp;</td>
   <td>Lexeme or token</td>
   <td>Expression</td>
 </tr>
 <tr>
-  <td>It&apos;s implemented by the<span class="ellipse">&thinsp;.&thinsp;.&thinsp;.&nbsp;</span></td>
+  <td>It&rsquo;s implemented by the<span class="ellipse">&thinsp;.&thinsp;.&thinsp;.</span></td>
   <td>&rarr;&ensp;</td>
   <td>Scanner</td>
   <td>Parser</td>
@@ -197,9 +197,9 @@ To make this concrete, we need a <span name="turtles">way</span> to write down
 these production rules. People have been trying to crystallize grammar all the
 way back to Pāṇini's *Ashtadhyayi*, which codified Sanskrit grammar a mere
 couple thousand years ago. Not much progress happened until John Backus and
-company needed a notation for specifying ALGOL 58 and came up with [Backus-Naur
-form][bnf] (**BNF**). Since then, nearly everyone uses some flavor of BNF,
-tweaked to their own tastes.
+company needed a notation for specifying ALGOL 58 and came up with
+[**Backus-Naur form**][bnf] (**BNF**). Since then, nearly everyone uses some
+flavor of BNF, tweaked to their own tastes.
 
 [bnf]: https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form
 
@@ -310,10 +310,10 @@ pack an infinite number of strings into a finite grammar.
 ### Enhancing our notation
 
 Stuffing an infinite set of strings in a handful of rules is pretty fantastic,
-but let's take it further. Our notation works, but it's a little tedious. So,
-like any good language designer, we'll sprinkle some syntactic sugar on top. In
-addition to terminals and nonterminals, we'll allow a few other kinds of
-expressions in the body of a rule:
+but let's take it further. Our notation works, but it's tedious. So, like any
+good language designer, we'll sprinkle a little syntactic sugar on top -- some
+extra convenience notation. In addition to terminals and nonterminals, we'll
+allow a few other kinds of expressions in the body of a rule:
 
 *   Instead of repeating the rule name each time we want to add another
     production for it, we'll allow a series of productions separated by a pipe
@@ -330,11 +330,11 @@ expressions in the body of a rule:
     protein → ( "scrambled" | "poached" | "fried" ) "eggs" ;
     ```
 
-*   Using <span name="recursion">recursion</span> to support repeated sequences
-    of symbols has a certain appealing <span name="purity">purity</span>, but
-    it's kind of a chore to make a separate named sub-rule each time we want to
-    loop. So, we also use a postfix `*` to allow the previous symbol or group to
-    be repeated zero or more times.
+*   Using recursion to support repeated sequences of symbols has a certain
+    appealing <span name="purity">purity</span>, but it's kind of a chore to
+    make a separate named sub-rule each time we want to loop. So, we also use a
+    postfix `*` to allow the previous symbol or group to be repeated zero or
+    more times.
 
     ```ebnf
     crispiness → "really" "really"* ;
@@ -740,9 +740,9 @@ operation for each type all in one place.
 <aside name="ml">
 
 ML, short for "metalanguage" was created by Robin Milner and friends and forms
-one of the main branches in the great programming language family. Its children
-include SML, Caml, OCaml, Haskell, and F#. Even Scala, Rust, and Swift bear a
-strong resemblance.
+one of the main branches in the great programming language family tree. Its
+children include SML, Caml, OCaml, Haskell, and F#. Even Scala, Rust, and Swift
+bear a strong resemblance.
 
 Much like Lisp, it is one of those languages that is so full of good ideas that
 language designers today are still rediscovering them over forty years later.
@@ -1034,7 +1034,7 @@ maintain AstPrinter, feel free to delete it. We won't need it again.
     (SML or Haskell would be ideal for this exercise, but Scheme or another Lisp
     works as well.)
 
-1.  In [Reverse Polish Notation][rpn] (RPN), the operands to an arithmetic
+1.  In [reverse Polish notation][rpn] (RPN), the operands to an arithmetic
     operator are both placed before the operator, so `1 + 2` becomes `1 2 +`.
     Evaluation proceeds from left to right. Numbers are pushed onto an implicit
     stack. An arithmetic operator pops the top two numbers, performs the

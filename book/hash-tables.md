@@ -669,7 +669,7 @@ stored those in the struct.)
 
 After that's done, we can release the memory for the old array.
 
-^code free-old-array (3 before, 3 after)
+^code free-old-array (3 before, 1 after)
 
 With that, we have a hash table that we can stuff as many entries into as we
 like. It handles overwriting existing keys and growing itself as needed to
@@ -730,14 +730,14 @@ their desire to overlook it. As we'll see, deleting from a hash table that uses
 
 <aside name="delete">
 
-With separate chaining, deleting is as simple as removing a node from a linked
+With separate chaining, deleting is as easy as removing a node from a linked
 list.
 
 </aside>
 
 At least the declaration is simple.
 
-^code table-delete-h (1 before, 2 after)
+^code table-delete-h (1 before, 1 after)
 
 The obvious approach is to mirror insertion. Use `findEntry()` to look up the
 entry's bucket. Then clear out the bucket. Done!
@@ -841,7 +841,7 @@ code. The count is no longer the number of entries in the hash table, it's the
 number of entries plus tombstones. That implies that we increment the count
 during insertion only if the new entry goes into an entirely empty bucket.
 
-^code set-increment-count (2 before, 2 after)
+^code set-increment-count (1 before, 2 after)
 
 If we are replacing a tombstone with a new entry, the bucket has already been
 accounted for and the count doesn't change.
@@ -955,7 +955,7 @@ once we intern all the strings. In order to reliably deduplicate all strings,
 the VM needs to be able to find every string that's created. We do that by
 giving it a hash table to store them all.
 
-^code vm-strings (1 before, 2 after)
+^code vm-strings (1 before, 1 after)
 
 As usual, we need an include.
 
@@ -973,7 +973,7 @@ Some languages have a separate type or an explicit step to intern a string. For
 clox, we'll automatically intern every one. That means whenever we create a new
 unique string, we add it to the table.
 
-^code allocate-store-string (2 before, 1 after)
+^code allocate-store-string (1 before, 1 after)
 
 We're using the table more like a hash *set* than a hash *table*. The keys are
 the strings and those are all we care about, so we just use `nil` for the
@@ -983,7 +983,7 @@ This gets a string into the table assuming that it's unique, but we need to
 actually check for duplication before we get here. We do that in the two
 higher-level functions that call `allocateString()`. Here's one:
 
-^code copy-string-intern (1 before, 2 after)
+^code copy-string-intern (1 before, 1 after)
 
 When copying a string into a new LoxString, we look it up in the string table
 first. If we find it, instead of "copying", we just return a reference to that

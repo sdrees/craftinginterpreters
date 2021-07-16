@@ -242,7 +242,7 @@ do something more interesting.
 First, let's be diligent VM hackers and slot in disassembler support for the
 instruction.
 
-^code disassemble-closure (3 before, 1 after)
+^code disassemble-closure (2 before, 1 after)
 
 There's more going on here than we usually have in the disassembler. By the end
 of the chapter, you'll discover that `OP_CLOSURE` is quite an unusual
@@ -256,7 +256,7 @@ instruction, naturally. But we also need to touch every piece of code in the VM
 that works with ObjFunction and change it to use ObjClosure instead -- function
 calls, call frames, etc. We'll start with the instruction, though.
 
-^code interpret-closure (2 before, 1 after)
+^code interpret-closure (1 before, 1 after)
 
 Like the `OP_CONSTANT` instruction we used before, first we load the compiled
 function from the constant table. The difference now is that we wrap that
@@ -296,7 +296,7 @@ The next thing `call()` does is create a new CallFrame. We change that code to
 store the closure in the CallFrame and get the bytecode pointer from the
 closure's function.
 
-^code call-init-closure (1 before, 2 after)
+^code call-init-closure (1 before, 1 after)
 
 This necessitates changing the declaration of CallFrame too.
 
@@ -306,7 +306,7 @@ That change triggers a few other cascading changes. Every place in the VM that
 accessed CallFrame's function needs to use a closure instead. First, the macro
 for reading a constant from the current function's constant table:
 
-^code read-constant (1 before, 1 after)
+^code read-constant (2 before, 2 after)
 
 When `DEBUG_TRACE_EXECUTION` is enabled, it needs to get to the chunk from the
 closure.
@@ -320,7 +320,7 @@ Likewise when reporting a runtime error:
 Almost there. The last piece is the blob of code that sets up the very first
 CallFrame to begin executing the top-level code for a Lox script.
 
-^code interpret (4 before, 2 after)
+^code interpret (1 before, 2 after)
 
 <span name="pop">The</span> compiler still returns a raw ObjFunction when
 compiling a script. That's fine, but it means we need to wrap it in an
@@ -498,10 +498,10 @@ runtime.
 
 This function adds a new upvalue to that array. It also keeps track of the
 number of upvalues the function uses. It stores that count directly in the
-ObjFunction itself because we'll also <span name="span">need that number for use
-at runtime.
+ObjFunction itself because we'll also <span name="bridge">need</span> that
+number for use at runtime.
 
-<aside name="span">
+<aside name="bridge">
 
 Like constants and function arity, the upvalue count is another one of those
 little pieces of data that form the bridge between the compiler and runtime.
@@ -660,7 +660,7 @@ executes.
 
 In order to implement this, `resolveUpvalue()` becomes recursive.
 
-^code resolve-upvalue-recurse (3 before, 2 after)
+^code resolve-upvalue-recurse (4 before, 1 after)
 
 It's only another three lines of code, but I found this function really
 challenging to get right the first time. This in spite of the fact that I wasn't
@@ -672,7 +672,7 @@ both. The recursive call is right in the middle.
 
 We'll walk through it slowly. First, we look for a matching local variable in
 the enclosing function. If we find one, we capture that local and return. That's
-the <span name="base">base case.
+the <span name="base">base</span> case.
 
 <aside name="base">
 
@@ -734,7 +734,7 @@ capture.
 This odd encoding means we need some bespoke support in the disassembly code
 for `OP_CLOSURE`.
 
-^code disassemble-upvalues (4 before, 1 after)
+^code disassemble-upvalues (1 before, 1 after)
 
 For example, take this script:
 
@@ -933,13 +933,13 @@ an array full of upvalues pointing to variables.
 With that in hand, we can implement the instructions that work with those
 upvalues.
 
-^code interpret-get-upvalue (1 before, 2 after)
+^code interpret-get-upvalue (1 before, 1 after)
 
 The operand is the index into the current function's upvalue array. So we simply
 look up the corresponding upvalue and dereference its location pointer to read
 the value in that slot. Setting a variable is similar.
 
-^code interpret-set-upvalue (1 before, 2 after)
+^code interpret-set-upvalue (1 before, 1 after)
 
 We <span name="assign">take</span> the value on top of the stack and store it
 into the slot pointed to by the chosen upvalue. Just as with the instructions
@@ -1244,7 +1244,7 @@ When we allocate an upvalue, it is not attached to any list yet so the link is
 
 The VM owns the list, so the head pointer goes right inside the main VM struct.
 
-^code open-upvalues-field (1 before, 3 after)
+^code open-upvalues-field (1 before, 1 after)
 
 The list starts out empty.
 
@@ -1348,7 +1348,7 @@ The compiler helpfully emits an `OP_CLOSE_UPVALUE` instruction to tell the VM
 exactly when a local variable should be hoisted onto the heap. Executing that
 instruction is the interpreter's responsibility.
 
-^code interpret-close-upvalue (2 before, 1 after)
+^code interpret-close-upvalue (1 before, 1 after)
 
 When we reach the instruction, the variable we are hoisting is right on top of
 the stack. We call a helper function, passing the address of that stack slot.
@@ -1421,7 +1421,7 @@ This is the reason `closeUpvalues()` accepts a pointer to a stack slot. When a
 function returns, we call that same helper and pass in the first stack slot
 owned by the function.
 
-^code return-close-upvalues (1 before, 2 after)
+^code return-close-upvalues (1 before, 1 after)
 
 By passing the first slot in the function's stack window, we close every
 remaining open upvalue owned by the returning function. And with that, we now

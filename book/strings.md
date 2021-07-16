@@ -22,7 +22,7 @@ Instead of using a terminating null byte to indicate the end of the string like
 C, Pascal strings started with a length value. Since UCSD used only a single
 byte to store the length, strings couldn't be any longer than 255 characters.
 
-<img src="image/strings/pstring.png" alt="The Pascal string 'hello' with a length byte of 5 preceding it.">
+<img src="image/strings/pstring.png" alt="The Pascal string 'hello' with a length byte of 5 preceding it." />
 
 </aside>
 
@@ -45,7 +45,7 @@ heap-allocated types in clox: strings, instances, functions, you get the idea.
 Each type has its own unique data, but there is also state they all share that
 [our future garbage collector][gc] will use to manage their memory.
 
-<img src="image/strings/value.png" class="wide" alt="Field layout of number and obj values.">
+<img src="image/strings/value.png" class="wide" alt="Field layout of number and obj values." />
 
 [gc]: garbage-collection.html
 
@@ -109,15 +109,8 @@ Like a tagged union, each Obj starts with a tag field that identifies what kind
 of object it is -- string, instance, etc. Following that are the payload fields.
 Instead of a union with cases for each type, each type is its own separate
 struct. The tricky part is how to treat these structs uniformly since C has no
-concept of inheritance or polymorphism. I'll explain that <span
-name="foreshadowing">soon</span>, but first lets get the preliminary stuff out
-of the way.
-
-<aside name="foreshadowing">
-
-Ooh, foreshadowing!
-
-</aside>
+concept of inheritance or polymorphism. I'll explain that soon, but first lets
+get the preliminary stuff out of the way.
 
 The name "Obj" itself refers to a struct that contains the state shared across
 all object types. It's sort of like the "base class" for objects. Because of
@@ -281,8 +274,8 @@ terminate it.
 
 <aside name="terminator" class="bottom">
 
-We need to terminate it explicitly ourselves because the lexeme points at a
-range of characters inside the monolithic source string and isn't terminated.
+We need to terminate the string ourselves because the lexeme points at a range
+of characters inside the monolithic source string and isn't terminated.
 
 Since ObjString stores the length explicitly, we *could* leave the character
 array unterminated, but slapping a terminator on the end costs us only a byte
@@ -338,7 +331,7 @@ literals.
 
 <aside name="viola">
 
-<img src="image/strings/viola.png" class="above" alt="A viola.">
+<img src="image/strings/viola.png" class="above" alt="A viola." />
 
 Don't get "voilà" confused with "viola". One means "there it is" and the other
 is a string instrument, the middle child between a violin and a cello. Yes, I
@@ -356,7 +349,7 @@ first step is to make the existing print code not barf on the new value type.
 If the value is a heap-allocated object, it defers to a helper function over in
 the "object" module.
 
-^code print-object-h
+^code print-object-h (1 before, 2 after)
 
 The implementation looks like this:
 
@@ -450,7 +443,7 @@ In order to call `memcpy()`, the VM needs an include.
 Finally, we produce an ObjString to contain those characters. This time we use a
 new function, `takeString()`.
 
-^code take-string-h (2 before, 3 after)
+^code take-string-h (2 before, 1 after)
 
 The implementation looks like this:
 
@@ -487,7 +480,7 @@ generates this <span name="stack">bytecode</span>:
 
 Here's what the stack looks like after each instruction:
 
-<img src="image/strings/stack.png" alt="The state of the stack at each instruction.">
+<img src="image/strings/stack.png" alt="The state of the stack at each instruction." />
 
 </aside>
 
@@ -625,7 +618,7 @@ keep a running count of the number of bytes of allocated memory.
 
 As usual, we need an include to wire everything together.
 
-^code memory-include-object (2 before, 2 after)
+^code memory-include-object (1 before, 2 after)
 
 Then in the implementation file:
 
@@ -779,7 +772,7 @@ This covers all your bases but is really complex. It's a lot to implement,
 debug, and optimize. When serializing strings or interoperating with other
 systems, you have to deal with all of the encodings. Users need to understand
 the two indexing APIs and know which to use when. This is the approach that
-newer, big languages tend to take -- like Perl 6 and Swift.
+newer, big languages tend to take -- like Raku and Swift.
 
 A simpler compromise is to always encode using UTF-8 and only expose an API that
 works with code points. For users that want to work with grapheme clusters, let

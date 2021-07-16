@@ -1,6 +1,6 @@
-> I wanna, I wanna,<br>
-> I wanna, I wanna,<br>
-> I wanna be trash.<br>
+> I wanna, I wanna,<br />
+> I wanna, I wanna,<br />
+> I wanna be trash.<br />
 >
 > <cite>The Whip, &ldquo;Trash&rdquo;</cite>
 
@@ -41,7 +41,7 @@ knew.
 
 </aside>
 
-### Reachability
+## Reachability
 
 This raises a surprisingly difficult question: how does a VM tell what memory is
 *not* needed? Memory is only needed if it is read in the future, but short of
@@ -266,7 +266,7 @@ horrendous for performance. But it's great for flushing out memory management
 bugs that occur only when a GC is triggered at just the right moment. If *every*
 moment triggers a GC, you're likely to find those bugs.
 
-^code call-collect (2 before, 1 after)
+^code call-collect (1 before, 1 after)
 
 Whenever we call `reallocate()` to acquire more memory, we force a collection to
 run. The if check is because `reallocate()` is also called to free or shrink an
@@ -312,7 +312,7 @@ We need a couple of includes.
 We don't have a collector yet, but we can start putting in some of the logging
 now. We'll want to know when a collection run starts.
 
-^code log-before-collect (1 before, 2 after)
+^code log-before-collect (1 before, 1 after)
 
 Eventually we will log some other operations during the collection, so we'll
 also want to know when the show's over.
@@ -515,18 +515,20 @@ publication.
 
 </aside>
 
-*   **<img src="image/garbage-collection/white.png" class="dot" /> White:** At
-    the beginning of a garbage collection, every object is white. This color
-    means we have not reached or processed the object at all.
+*   **<img src="image/garbage-collection/white.png" alt="A white circle."
+    class="dot" /> White:** At the beginning of a garbage collection, every
+    object is white. This color means we have not reached or processed the
+    object at all.
 
-*   **<img src="image/garbage-collection/gray.png" class="dot" /> Gray:** During
-    marking, when we first reach an object, we darken it gray. This color means
-    we know the object itself is reachable and should not be collected. But we
-    have not yet traced *through* it to see what *other* objects it references.
-    In graph algorithm terms, this is the *worklist* -- the set of objects we
-    know about but haven't processed yet.
+*   **<img src="image/garbage-collection/gray.png" alt="A gray circle."
+    class="dot" /> Gray:** During marking, when we first reach an object, we
+    darken it gray. This color means we know the object itself is reachable and
+    should not be collected. But we have not yet traced *through* it to see what
+    *other* objects it references. In graph algorithm terms, this is the
+    *worklist* -- the set of objects we know about but haven't processed yet.
 
-*   **<img src="image/garbage-collection/black.png" class="dot" /> Black:** When
+*   **<img src="image/garbage-collection/black.png" alt="A black circle."
+    class="dot" /> Black:** When
     we take a gray object and mark all of the objects it references, we then
     turn the gray object black. This color means the mark phase is done
     processing that object.
@@ -1015,7 +1017,7 @@ frequently so that we don't lose too much latency by waiting too long.
 
 The implementation requires two new bookkeeping fields in the VM.
 
-^code vm-fields (1 before, 2 after)
+^code vm-fields (1 before, 1 after)
 
 The first is a running total of the number of bytes of managed memory the VM has
 allocated. The second is the threshold that triggers the next collection. We
@@ -1045,7 +1047,7 @@ Every time we allocate or free some memory, we adjust the counter by that delta.
 
 When the total crosses the limit, we run the collector.
 
-^code collect-on-next (4 before, 1 after)
+^code collect-on-next (2 before, 1 after)
 
 Now, finally, our garbage collector actually does something when the user runs a
 program without our hidden diagnostic flag enabled. The sweep phase frees

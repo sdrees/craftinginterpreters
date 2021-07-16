@@ -2,8 +2,7 @@
 > twenty-six phonetic symbols, ten Arabic numbers, and about eight punctuation
 > marks.
 >
-> <cite>Kurt Vonnegut, <em>Like Shaking Hands With God: A Conversation about
-> Writing</em></cite>
+> <cite>Kurt Vonnegut, <em>Like Shaking Hands With God: A Conversation about Writing</em></cite>
 
 Our second interpreter, clox, has three phases -- scanner, compiler, and virtual
 machine. A data structure joins each pair of phases. Tokens flow from scanner to
@@ -404,7 +403,7 @@ these also has a corresponding single-character token. That means that when we
 see a character like `!`, we don't know if we're in a `!` token or a `!=` until
 we look at the next character too. We handle those like so:
 
-^code two-char (1 before, 2 after)
+^code two-char (1 before, 1 after)
 
 After consuming the first character, we look for an `=`. If found, we consume it
 and return the corresponding two-character token. Otherwise, we leave the
@@ -433,7 +432,7 @@ something.
 
 Instead, before starting the token, we shunt off to a separate function.
 
-^code call-skip-whitespace (1 before, 2 after)
+^code call-skip-whitespace (1 before, 1 after)
 
 This advances the scanner past any leading whitespace. After this call returns,
 we know the very next character is a meaningful one (or we're at the end of the
@@ -485,7 +484,7 @@ Number and string tokens are special because they have a runtime value
 associated with them. We'll start with strings because they are easy to
 recognize -- they always begin with a double quote.
 
-^code scan-string (1 before, 2 after)
+^code scan-string (1 before, 1 after)
 
 That calls a new function.
 
@@ -548,7 +547,7 @@ structures.
 First, though, we have to scan the lexeme. Names start with a letter or
 underscore.
 
-^code scan-identifier (1 before, 2 after)
+^code scan-identifier (1 before, 1 after)
 
 We recognize those using this:
 
@@ -614,6 +613,8 @@ letter in the lexeme and so on. If at any point the next letter in the lexeme
 doesn't match a child node, then the identifier must not be a keyword and we
 stop. If we reach a double-lined box, and we're at the last character of the
 lexeme, then we found a keyword.
+
+### Tries and state machines
 
 This tree diagram is an example of a thing called a <span
 name="trie">[**trie**][trie]</span>. A trie stores a set of strings. Most other
@@ -702,7 +703,7 @@ text editors work under the hood. They take your regex string and convert it to
 a DFA, which they then use to match strings.
 
 If you want to learn the algorithm to convert a regular expression into a DFA,
-[the Dragon Book][dragon] has you covered.
+[the dragon book][dragon] has you covered.
 
 [dragon]: https://en.wikipedia.org/wiki/Compilers:_Principles,_Techniques,_and_Tools
 
